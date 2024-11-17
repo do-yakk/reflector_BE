@@ -36,5 +36,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("register/email")
+    public ResponseEntity<APIResponse<?>> emailCheck(@RequestBody UserDto.Email emailDto) {
+        try {
+            UserDto.Email result = userService.checkEmail(emailDto);
+            return ResponseEntity.ok().body(APIResponse.successAPI("Email is not duplicate.", result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+        }
+    }
+
 
 }

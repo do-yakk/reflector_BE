@@ -7,4 +7,5 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     UserDto.sendCode sendCode(UserDto.sendCode sendCodeDto) throws Exception;
     UserDto.checkCode checkCode(UserDto.checkCode checkCodeDto) throws Exception;
+    UserDto.Email checkEmail(UserDto.Email emailDto) throws Exception;
 }

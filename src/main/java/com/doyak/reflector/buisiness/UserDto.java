@@ -17,4 +17,11 @@ public class UserDto {
         private String email;
         private String code;
     }
+
+    @Getter
+    @Setter
+    public static class Email {
+        private String email;
+    }
+
 }
