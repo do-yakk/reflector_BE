@@ -1,0 +1,21 @@
+package com.doyak.reflector.infrastructure;
+
+
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Repository;
+
+import java.time.Duration;
+
+@Repository
+public class UserRepositoryImpl implements UserRepository {
+
+    private final StringRedisTemplate stringRedisTemplate;
+
+    public UserRepositoryImpl(StringRedisTemplate stringRedisTemplate) { this.stringRedisTemplate = stringRedisTemplate; }
+
+    public void createEmailCode(String email, String code) {
+        int TTL = 3 * 60;
+        stringRedisTemplate.opsForValue().set(email, code, Duration.ofSeconds(TTL));
+    }
+
+}
