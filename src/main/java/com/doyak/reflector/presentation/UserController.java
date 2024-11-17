@@ -6,6 +6,7 @@ import com.doyak.reflector.buisiness.repository.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,6 +21,16 @@ public class UserController {
         try {
             UserDto.sendCode result = userService.sendCode(sendCodeDto);
             return ResponseEntity.ok().body(APIResponse.successAPI("Successfully send code.", result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+        }
+    }
+
+    @GetMapping("register/email/verify-code")
+    public ResponseEntity<APIResponse<?>> emailVerificaton(@RequestBody UserDto.checkCode checkCodeDto) {
+        try {
+            UserDto.checkCode result = userService.checkCode(checkCodeDto);
+            return ResponseEntity.ok().body(APIResponse.successAPI("Email verification successful.", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
         }

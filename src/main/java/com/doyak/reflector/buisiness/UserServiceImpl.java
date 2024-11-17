@@ -38,4 +38,19 @@ public class UserServiceImpl implements UserService {
         }
         return sendCodeDto;
     }
+
+    public UserDto.checkCode checkCode(UserDto.checkCode checkCodeDto) throws Exception {
+        if (!isVerify(checkCodeDto)) {
+            throw new Exception("Failed to verify email.");
+        }
+        userRepository.deleteEmailCode(checkCodeDto.getEmail());
+        return checkCodeDto;
+    }
+
+    private boolean isVerify(UserDto.checkCode checkCodeDto) {
+        String email = checkCodeDto.getEmail();
+        String code = checkCodeDto.getCode();
+
+        return userRepository.checkEmailCode(email) && userRepository.getEmailCode(email).equals(code);
+    }
 }
