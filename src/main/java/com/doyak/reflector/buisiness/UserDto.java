@@ -3,7 +3,14 @@ package com.doyak.reflector.buisiness;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
+@Getter
+@Setter
 public class UserDto {
+
+    private String email;
+    private String password;
 
     @Getter
     @Setter
@@ -23,5 +30,6 @@ public class UserDto {
     public static class Email {
         private String email;
     }
+
 
 }

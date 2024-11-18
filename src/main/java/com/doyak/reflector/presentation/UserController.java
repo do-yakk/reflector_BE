@@ -46,5 +46,15 @@ public class UserController {
         }
     }
 
+    @PostMapping("register")
+    public ResponseEntity<APIResponse<?>> register(@RequestBody UserDto userDto) {
+        try {
+            userService.register(userDto);
+            return ResponseEntity.ok().body(APIResponse.successAPI("Successfully registered.", null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+        }
+    }
+
 
 }

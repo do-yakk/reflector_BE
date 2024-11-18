@@ -1,11 +1,13 @@
 package com.doyak.reflector.buisiness;
 
 import com.doyak.reflector.buisiness.repository.UserService;
+import com.doyak.reflector.domain.User;
 import com.doyak.reflector.infrastructure.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -63,5 +65,17 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new Exception("Email is duplicate.");
         }
+    }
+
+    public void register(UserDto userDto) throws Exception {
+        if (userDto == null)
+            throw new Exception("User cannot be null");
+
+        try {
+            userRepository.save(userDto);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+
     }
 }

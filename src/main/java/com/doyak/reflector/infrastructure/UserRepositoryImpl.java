@@ -1,10 +1,15 @@
 package com.doyak.reflector.infrastructure;
 
+import com.doyak.reflector.buisiness.UserDto;
+import com.doyak.reflector.domain.User;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.DriverManager;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -29,6 +34,18 @@ public class UserRepositoryImpl implements UserRepository {
 
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
         return count != null && count > 0;
+    }
+
+    public void save(UserDto userDto) throws Exception {
+        String sql = "insert into user (user_id, email, password, created_at, updated_at) values (?, ?, ?, ?, ?)";
+
+        int rowAffected = jdbcTemplate.update(sql, UUID.randomUUID().toString(), userDto.getEmail(), userDto.getPassword(),
+                                              LocalDateTime.now(), LocalDateTime.now());
+
+        if (rowAffected < 1) {
+            throw new Exception("Failed to save user");
+        }
+
     }
 
 }

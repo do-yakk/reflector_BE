@@ -6,6 +6,7 @@ import lombok.Setter;
 import jakarta.persistence.Entity;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -16,9 +17,13 @@ import java.util.UUID;
 public class User {
 
     @Id
-    private UUID userId;
+    private String user_id;
 
     private String email;
 
     private String password;
+
+    private LocalDateTime created_at;
+
+    private LocalDateTime updated_at;
 }
