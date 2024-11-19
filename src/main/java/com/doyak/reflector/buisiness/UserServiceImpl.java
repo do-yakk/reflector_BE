@@ -63,9 +63,9 @@ public class UserServiceImpl implements UserService {
 
     public UserDto.Email checkEmail(UserDto.Email emailDto) throws Exception {
         String email = emailDto.getEmail();
-        boolean result = userRepository.existsByEmail(email);
+        User result = userRepository.findByEmail(email);
 
-        if (!result) {
+        if (result == null) {
             return emailDto;
         } else {
             throw new Exception("Email is duplicate.");

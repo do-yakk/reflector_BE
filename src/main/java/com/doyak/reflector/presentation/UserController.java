@@ -2,10 +2,8 @@ package com.doyak.reflector.presentation;
 
 import com.doyak.reflector.buisiness.APIResponse;
 import com.doyak.reflector.buisiness.UserDto;
-import com.doyak.reflector.buisiness.repository.SessionManager;
 import com.doyak.reflector.buisiness.repository.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

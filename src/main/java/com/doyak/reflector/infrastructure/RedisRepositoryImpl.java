@@ -1,7 +1,6 @@
 package com.doyak.reflector.infrastructure;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
