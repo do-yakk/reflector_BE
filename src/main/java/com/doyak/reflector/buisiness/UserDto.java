@@ -31,5 +31,10 @@ public class UserDto {
         private String email;
     }
 
+    @Getter
+    @Setter
+    public static class UserId {
+        private String user_id;
+    }
 
 }

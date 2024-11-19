@@ -2,7 +2,10 @@ package com.doyak.reflector.presentation;
 
 import com.doyak.reflector.buisiness.APIResponse;
 import com.doyak.reflector.buisiness.UserDto;
+import com.doyak.reflector.buisiness.repository.SessionManager;
 import com.doyak.reflector.buisiness.repository.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -56,5 +59,17 @@ public class UserController {
         }
     }
 
+    @GetMapping("login")
+    public String login(@RequestBody UserDto userDto, HttpServletRequest request) {
+        try {
+            UserDto.UserId loginUser = userService.login(userDto);
+            request.getSession().setAttribute("LOGIN_USER", loginUser.getUser_id()); // 세션 생성 및 세션 값 저장. servlet에서 제공하는 세션의 경우 servlet이 자동으로 쿠키에 정보를 넘겨준다.
+            ResponseEntity.ok().body(APIResponse.successAPI("Login successful.", loginUser));
+            return "redirect:/";
+        } catch (Exception e) {
+            ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+            return "redirect:/";
+        }
+    }
 
 }

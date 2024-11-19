@@ -9,4 +9,5 @@ public interface UserService {
     UserDto.checkCode checkCode(UserDto.checkCode checkCodeDto) throws Exception;
     UserDto.Email checkEmail(UserDto.Email emailDto) throws Exception;
     void register(UserDto userDto) throws Exception;
+    UserDto.UserId login(UserDto userDto) throws Exception;
 }

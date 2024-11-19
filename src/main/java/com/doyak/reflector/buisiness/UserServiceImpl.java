@@ -2,10 +2,12 @@ package com.doyak.reflector.buisiness;
 
 import com.doyak.reflector.buisiness.repository.UserService;
 import com.doyak.reflector.domain.User;
+import com.doyak.reflector.infrastructure.RedisRepository;
 import com.doyak.reflector.infrastructure.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.UUID;
 
@@ -14,6 +16,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RedisRepository redisRepository;
 
     @Autowired
     private MailServiceImpl mailServiceImpl;
@@ -34,7 +39,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             mailServiceImpl.sendMail(email, code);
-            userRepository.createEmailCode(email, code);
+            redisRepository.createEmailCode(email, code);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -45,7 +50,7 @@ public class UserServiceImpl implements UserService {
         if (!isVerify(checkCodeDto)) {
             throw new Exception("Failed to verify email.");
         }
-        userRepository.deleteEmailCode(checkCodeDto.getEmail());
+        redisRepository.deleteEmailCode(checkCodeDto.getEmail());
         return checkCodeDto;
     }
 
@@ -53,7 +58,7 @@ public class UserServiceImpl implements UserService {
         String email = checkCodeDto.getEmail();
         String code = checkCodeDto.getCode();
 
-        return userRepository.checkEmailCode(email) && userRepository.getEmailCode(email).equals(code);
+        return redisRepository.checkEmailCode(email) && redisRepository.getEmailCode(email).equals(code);
     }
 
     public UserDto.Email checkEmail(UserDto.Email emailDto) throws Exception {
@@ -70,12 +75,33 @@ public class UserServiceImpl implements UserService {
     public void register(UserDto userDto) throws Exception {
         if (userDto == null)
             throw new Exception("User cannot be null");
-
         try {
-            userRepository.save(userDto);
+            User user = new User();
+            user.setUser_id(UUID.randomUUID().toString());
+            user.setEmail(userDto.getEmail());
+            user.setPassword(userDto.getPassword());
+            user.setCreated_at(LocalDateTime.now());
+            user.setUpdated_at(LocalDateTime.now());
+            userRepository.save(user);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
 
+    }
+
+    public UserDto.UserId login(UserDto userDto) throws Exception {
+        if (userDto == null)
+            throw new Exception("User cannot be null");
+        try {
+            User user = userRepository.findByEmail(userDto.getEmail());
+            if (user == null) {
+                throw new Exception("User not found.");
+            }
+            UserDto.UserId loginUser = new UserDto.UserId();
+            loginUser.setUser_id(user.getUser_id());
+            return loginUser;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }
