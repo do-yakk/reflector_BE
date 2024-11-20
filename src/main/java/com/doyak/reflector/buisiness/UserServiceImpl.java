@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception("User cannot be null");
         try {
             User user = new User();
-            user.setUser_id(UUID.randomUUID().toString());
+            user.setUserId(UUID.randomUUID().toString());
             user.setEmail(userDto.getEmail());
             user.setPassword(userDto.getPassword());
             user.setCreated_at(LocalDateTime.now());
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
                 throw new Exception("User not found.");
             }
             UserDto.UserId loginUser = new UserDto.UserId();
-            loginUser.setUser_id(user.getUser_id());
+            loginUser.setUser_id(user.getUserId());
             return loginUser;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
