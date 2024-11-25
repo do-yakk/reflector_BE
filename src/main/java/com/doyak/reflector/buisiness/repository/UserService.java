@@ -10,4 +10,6 @@ public interface UserService {
     UserDto.Email checkEmail(UserDto.Email emailDto) throws Exception;
     void register(UserDto userDto) throws Exception;
     UserDto.UserId login(UserDto userDto) throws Exception;
+    UserDto.updateEmail updateEmail(UserDto.updateEmail userEmailDto) throws Exception;
+    UserDto.updatePassword updatePassword(UserDto.updatePassword userPasswordDto) throws Exception;
 }

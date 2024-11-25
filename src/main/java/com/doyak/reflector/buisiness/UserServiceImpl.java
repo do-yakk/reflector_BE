@@ -104,4 +104,33 @@ public class UserServiceImpl implements UserService {
             throw new Exception(e.getMessage());
         }
     }
+
+    public UserDto.updateEmail updateEmail(UserDto.updateEmail userDto) throws Exception {
+        if (userDto == null)
+            throw new Exception("User cannot be null");
+        try {
+            User user = userRepository.findByUserId(userDto.getUser_id());
+            user.setEmail(userDto.getEmail());
+            user.setUpdated_at(LocalDateTime.now());
+            userRepository.save(user);
+            return userDto;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public UserDto.updatePassword updatePassword(UserDto.updatePassword userDto) throws Exception {
+        if (userDto == null)
+            throw new Exception("User cannot be null");
+        try {
+            User user = userRepository.findByUserId(userDto.getUser_id());
+            user.setPassword(userDto.getPassword());
+            user.setUpdated_at(LocalDateTime.now());
+            userRepository.save(user);
+            return userDto;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
 }

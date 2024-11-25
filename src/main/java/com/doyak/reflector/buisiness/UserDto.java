@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 public class UserDto {
 
+    private String user_id;
     private String email;
     private String password;
 
@@ -27,14 +28,34 @@ public class UserDto {
 
     @Getter
     @Setter
+    public static class UserId {
+        private String user_id;
+    }
+
+    @Getter
+    @Setter
     public static class Email {
         private String email;
     }
 
     @Getter
     @Setter
-    public static class UserId {
+    public static class Password {
+        private String password;
+    }
+
+
+    @Getter
+    @Setter
+    public static class updateEmail {
         private String user_id;
+        private String email;
+    }
+    @Getter
+    @Setter
+    public static class updatePassword {
+        private String user_id;
+        private String password;
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -97,4 +98,41 @@ public class UserController {
         return "redirect:/";
     }
 
+    @PatchMapping("information/email")
+    public ResponseEntity<APIResponse<?>> updateEmail(@RequestBody UserDto.Email emailDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // 세션이 없어도 문제가 없으므로 false. 세션이 존재하지 않을시 null 반환
+        if (session == null) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI("Session is null."));
+        }
+        String userId = (String) session.getAttribute("LOGIN_USER");
+        UserDto.updateEmail user = new UserDto.updateEmail();
+        user.setUser_id(userId);
+        user.setEmail(emailDto.getEmail());
+
+        try {
+            UserDto.updateEmail result = userService.updateEmail(user);
+            return ResponseEntity.ok().body(APIResponse.successAPI("Email updated successful.", result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("information/password")
+    public ResponseEntity<APIResponse<?>> updatePassword(@RequestBody UserDto.Password passwordDto, HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // 세션이 없어도 문제가 없으므로 false. 세션이 존재하지 않을시 null 반환
+        if (session == null) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI("Session is null."));
+        }
+        String userId = (String) session.getAttribute("LOGIN_USER");
+        UserDto.updatePassword user = new UserDto.updatePassword();
+        user.setUser_id(userId);
+        user.setPassword(passwordDto.getPassword());
+
+        try {
+            UserDto.updatePassword result = userService.updatePassword(user);
+            return ResponseEntity.ok().body(APIResponse.successAPI("password updated successful.", result));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(APIResponse.errorAPI(e.getMessage()));
+        }
+    }
 }
