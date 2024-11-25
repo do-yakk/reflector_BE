@@ -133,4 +133,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public void deleteUser(String userId) throws Exception {
+        User user = userRepository.findByUserId(userId);
+        if (user != null) {
+            userRepository.delete(user);
+        } else {
+            throw new Exception("User not found.");
+        }
+    }
+
 }

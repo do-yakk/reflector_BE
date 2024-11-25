@@ -12,4 +12,5 @@ public interface UserService {
     UserDto.UserId login(UserDto userDto) throws Exception;
     UserDto.updateEmail updateEmail(UserDto.updateEmail userEmailDto) throws Exception;
     UserDto.updatePassword updatePassword(UserDto.updatePassword userPasswordDto) throws Exception;
+    void deleteUser(String userId) throws Exception;
 }
