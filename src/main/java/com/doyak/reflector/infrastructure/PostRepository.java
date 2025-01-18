@@ -1,6 +1,6 @@
 package com.doyak.reflector.infrastructure;
 
-import com.doyak.reflector.domain.Post;
+ import com.doyak.reflector.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

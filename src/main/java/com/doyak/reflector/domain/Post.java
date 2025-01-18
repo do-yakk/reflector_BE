@@ -28,4 +28,14 @@ public class Post {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
+    public void updateTime(){
+        this.updated_at = LocalDateTime.now();
+    }
+
+    public void update(String newTitle, String newContent) {
+        this.title = newTitle;
+        this.content = newContent;
+        updateTime();
+    }
+
 }

@@ -11,4 +11,10 @@ public class PostDto {
         private String content;
     }
 
+    @Getter
+    public static class Modify {
+        private String title;
+        private String content;
+    }
+
 }

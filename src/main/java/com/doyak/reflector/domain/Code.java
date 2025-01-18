@@ -26,5 +26,13 @@ public class Code {
     private Float perform_mem;
 
 
+    public void update(String code, String review, Float performTime, Float performMem) {
+        this.code = code;
+        this.review = review;
+        this.perform_time = performTime;
+        this.perform_mem = performMem;
+    }
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.doyak.reflector.business;
 
 import com.doyak.reflector.business.repository.PostService;
+import com.doyak.reflector.domain.Code;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.infrastructure.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,22 @@ public class PostServiceImpl implements PostService {
     public Post read(String userId, Integer postId) {
         Post post = postRepository.findByUserIdAndPostId(userId, postId);
         return post;
+    }
+
+    @Override
+    public Post update(String userId, Integer PostId, String newTitle, String newContent) {
+        Post post = read(userId, PostId);
+        post.update(newTitle, newContent);
+        postRepository.save(post);
+        return post;
+    }
+
+    @Override
+    public void delete(String userId, Integer PostId) {
+        Post post = read(userId, PostId);
+        if (post != null) {
+            postRepository.delete(post);
+        }
     }
 
 }

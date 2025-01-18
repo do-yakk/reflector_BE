@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -35,5 +37,27 @@ public class CodeServiceImpl implements CodeService {
     @Override
     public Code get(String userId, Integer postId, Integer codeId) {
         return codeRepository.findByUserIdAndPostIdAndCodeId(userId, postId, codeId);
+    }
+
+    @Override
+    public Code modify(String userId, Integer noteId, Integer codeId, String code, String review, Float performTime, Float performMem) {
+        Code newCode = get(userId, noteId, codeId);
+        newCode.update(code, review, performTime, performMem);
+        codeRepository.save(newCode);
+        return newCode;
+    }
+
+    @Override
+    public void delete(String userId, Integer noteId, Integer codeId) {
+        Code code = get(userId, noteId, codeId);
+        if (code != null) {
+            codeRepository.delete(code);
+        }
+    }
+
+    @Override
+    public void deleteAll(String userId, Integer postId) {
+        List<Code> codes = codeRepository.findByUserIdAndPostId(userId, postId);
+        codeRepository.deleteAll(codes);
     }
 }
