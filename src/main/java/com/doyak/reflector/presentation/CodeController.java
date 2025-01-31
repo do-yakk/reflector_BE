@@ -22,11 +22,10 @@ public class CodeController {
 
 
     @PostMapping("/create/{user-id}/{post-id}")
-    public ResponseEntity<?> create(@PathVariable("user-id") String userId, @PathVariable("user-id") Integer postId, @RequestBody CodeDto.Code codeDto) {
+    public ResponseEntity<?> create(@PathVariable("user-id") String userId, @PathVariable("post-id") Integer postId, @RequestBody CodeDto.Code codeDto) {
         try {
             Code code = codeService.create(userId, postId, codeDto.getCode(), codeDto.getReview(),
                     codeDto.getPerformanceTime(), codeDto.getPerformanceMem());
-            Post post = postService.read(userId, postId);
             return ResponseEntity.ok(APIResponse.successAPI("성공", code));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(APIResponse.errorAPI("실패: " + e.getMessage()));

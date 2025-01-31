@@ -22,7 +22,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post create(String userId, Integer beakId, String title, String content) {
         Post post = new Post();
-        post.setBeakId(beakId);
+        post.setBaekId(beakId);
         post.setTitle(title);
         post.setContent(content);
         post.setCreated_at(LocalDateTime.now());

@@ -22,7 +22,7 @@ public class Post {
     @Column(name = "user_id")
     private String userId;
     @Column(name = "beak_id")
-    private Integer beakId;
+    private Integer baekId;
     private String title;
     private String content;
     private LocalDateTime created_at;
