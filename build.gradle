@@ -25,7 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    
+   
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	
@@ -33,7 +33,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'com.mysql:mysql-connector-j:8.1.0'
 }
 
 tasks.named('test') {
@@ -43,8 +43,4 @@ tasks.named('test') {
 
 bootJar {
     archiveFileName = 'app.jar'
-}
-
-jar {
-    enabled = false
 }
