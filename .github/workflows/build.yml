@@ -29,7 +29,4 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-        shell: bash
-				
-	
-	
+        shell: bash	
