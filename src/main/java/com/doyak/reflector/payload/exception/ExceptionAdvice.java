@@ -2,8 +2,6 @@ package com.doyak.reflector.payload.exception;
 
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +14,11 @@ import com.doyak.reflector.payload.ApiResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.dto.ErrorReasonDTO;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j 
 @RestControllerAdvice
 public class ExceptionAdvice {
-
-    private static final Logger log = LoggerFactory.getLogger(ExceptionAdvice.class);
-
     
     // 정의내린(예측한) GeneralException 처리 
     @ExceptionHandler(GeneralException.class)
