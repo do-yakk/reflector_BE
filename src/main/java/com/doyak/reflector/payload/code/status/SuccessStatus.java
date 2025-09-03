@@ -12,7 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SuccessStatus implements BaseCode {
 
-    OK(HttpStatus.OK, "COMMON200", "성공입니다.");
+   SUCCESS_OK(HttpStatus.OK, "COMMON200", "성공입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
