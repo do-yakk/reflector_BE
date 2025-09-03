@@ -20,8 +20,8 @@ public class ApiResponse<T> {
 	
 	public static <T> ApiResponse<T> onSuccess(T data) {
         return ApiResponse.<T>builder()
-                .code(SuccessStatus.OK.getCode()) 
-                .message(SuccessStatus.OK.getMessage())
+                .code(SuccessStatus.SUCCESS_OK.getCode()) 
+                .message(SuccessStatus.SUCCESS_OK.getMessage())
                 .data(data)
                 .build();
     }
