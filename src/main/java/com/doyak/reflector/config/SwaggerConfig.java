@@ -1,6 +1,7 @@
 package com.doyak.reflector.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
@@ -12,16 +13,17 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
+
 @Configuration
 public class SwaggerConfig {
 	
 	private final BuildProperties buildProperties;
 	private final GitProperties gitProperties;
 	
-	public SwaggerConfig(@Autowired(required = false) BuildProperties buildProperties, 
-						 @Autowired(required = false) GitProperties gitProperties) {
-		this.buildProperties = buildProperties;
-		this.gitProperties = gitProperties;
+	public SwaggerConfig(ObjectProvider<BuildProperties> buildProvider, 
+			ObjectProvider<GitProperties> gitProvider) {
+		this.buildProperties = buildProvider.getIfAvailable();
+		this.gitProperties = gitProvider.getIfAvailable();
 	}
 
 	@Bean
@@ -54,11 +56,11 @@ public class SwaggerConfig {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Reflector 서비스 API 문서입니다!\n\n");
 		if (buildProperties != null) {
-			sb.append("- Version: ").append(buildProperties.getVersion()).append("\n")
-			  .append("- Build Time: ").append(buildProperties.getTime()).append("\n");	
+			  sb.append("- Build Time: ").append(buildProperties.getTime()).append("\n");	
 		}
         if (gitProperties != null) {
-            sb.append("- Commit: ").append(gitProperties.getCommitId()).append("\n")
+        	String commitId = gitProperties.getCommitId();
+            sb.append("- Commit: ").append(commitId.substring(0, Math.min(commitId.length(), 5))).append("\n")
               .append("- Branch: ").append(gitProperties.getBranch()).append("\n");
         }
         return sb.toString();
