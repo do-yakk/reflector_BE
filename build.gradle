@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.1'
 }
 
 group = 'com.doyak'
@@ -24,17 +25,29 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    //implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+   	implementation 'org.springframework.boot:spring-boot-starter-actuator'
    
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    //testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     
     //implementation 'com.mysql:mysql-connector-j:8.1.0'
     implementation 'org.postgresql:postgresql:42.6.0'
+}
+
+springBoot {
+	buildInfo()
+}
+
+gitProperties {
+    keys = ['git.commit.id', 'git.branch']
+    failOnNoGitDirectory = false
 }
 
 tasks.named('test') {
