@@ -1,0 +1,66 @@
+package com.doyak.reflector.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.doyak.reflector.domain.common.BaseEntity;
+import com.doyak.reflector.domain.enums.Site;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
+
+@Entity
+@Getter
+public class Post extends BaseEntity{
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "post_id")
+	private Long postId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+	
+	@Enumerated(EnumType.STRING)
+	private Site site;
+	
+	private String title;
+	private Integer level;
+	
+	@Lob
+	private String content;
+	
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Block> blocks = new ArrayList<>();
+	
+	// 생성자 
+	public Post(User user, Site site, Integer level, String title, String content) {
+		this.user = user;
+		this.site = site;
+		this.level = level;
+		this.title = title;
+		this.content = content;
+	}
+
+	// 업데이트 
+	public void update(Site site, Integer level, String title, String content) {
+        if (site != null) this.site = site;
+        if (level != null) this.level = level;
+        if (title != null) this.title = title;
+        if (content != null) this.content = content;
+    }
+	
+}
