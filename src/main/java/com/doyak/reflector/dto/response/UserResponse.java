@@ -14,5 +14,6 @@ public class UserResponse {
     @Getter
     public static class UserLoginResponseDTO {
 		String email;
+		String token;
 	}
 }

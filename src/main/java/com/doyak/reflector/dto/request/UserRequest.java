@@ -18,4 +18,13 @@ public class UserRequest {
 		String password;
 		
 	}
+	
+	@Builder
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class UserSignUpDTO {
+		String email;
+		String password;
+	}
 }

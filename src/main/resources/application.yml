@@ -10,3 +10,5 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  jwt:
+    secret: 3uY0zbPGkXr8kLxZ/Ugec3yuE3cYyN6Q3Wam9tFN5Ek=
