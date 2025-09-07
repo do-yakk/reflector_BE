@@ -1,39 +1,23 @@
 package com.doyak.reflector.service;
 
-import java.util.Collections;
-import java.util.Optional;
-
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import com.doyak.reflector.domain.User;
-import com.doyak.reflector.dto.UserDetailsDto;
+import com.doyak.reflector.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 	
-	private final UserService userService;
+	private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) {
-        Optional<User> userOpt = userService.login(userEmail);
-        
-        return userOpt
-        		.map(u -> new UserDetailsDto(u, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))))
-        		.orElseThrow(() -> {
-        			if (userEmail == null || userEmail.equals("")) {
-        				return new AuthenticationServiceException("User Not found.");
-        			} else {
-        				return new BadCredentialsException("Invalid password.");
-        			}
-        		});
-   
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저의 토큰입니다."));
     }
 }

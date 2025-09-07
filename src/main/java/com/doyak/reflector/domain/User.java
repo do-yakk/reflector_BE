@@ -1,7 +1,11 @@
 package com.doyak.reflector.domain;
 
 
+import java.util.Collection;
 import java.util.UUID;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.doyak.reflector.domain.common.BaseEntity;
 
@@ -22,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements UserDetails {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,6 +36,16 @@ public class User extends BaseEntity {
 	
 	private String password;
 	
-	private String state;
-  
+	// private String state;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	}
+	
+	@Override
+    public String getUsername() {
+        return this.email;
+    }
+	
 }
