@@ -26,6 +26,22 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    private static final String[] AUTH_WHITELIST = {
+            "/v3/api-docs/**",
+            "/swagger/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/css/**",
+            "/js/**",
+            "/file/**",
+            "/images/**",
+            "/webjars/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/h2/**"
+    };
 	
 	
 	// HTTP에 대해서 인증과 인가 담당. 필터를 이용하여 인증 방식과 인증 절차에 대해 등록 
@@ -45,6 +61,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers("/api/users/sign-up").permitAll()
                     .requestMatchers("/api/users/login").permitAll()
+                    .requestMatchers(AUTH_WHITELIST).permitAll()
 					.anyRequest().authenticated())
 			
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
