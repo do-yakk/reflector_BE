@@ -11,4 +11,19 @@ spring:
       ddl-auto: update
     open-in-view: false
   jwt:
-    secret: 3uY0zbPGkXr8kLxZ/Ugec3yuE3cYyN6Q3Wam9tFN5Ek=
+    secret: ${JWT_SECRET}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
