@@ -9,6 +9,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.payload.ApiResponse;
+import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
@@ -25,8 +26,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
         log.error("No Authorities", accessDeniedException);
-        ApiResponse<Object> apiResponse =
-                ApiResponse.onFailure("COMMON403", HttpStatus.FORBIDDEN.name(), "접근 권한이 필요합니다.");
+        ErrorStatus errorStatus = ErrorStatus.FORBIDDEN;
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getHttpStatus().name(), errorStatus.getMessage());
         String responseBody = new ObjectMapper().writeValueAsString(apiResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.FORBIDDEN.value());

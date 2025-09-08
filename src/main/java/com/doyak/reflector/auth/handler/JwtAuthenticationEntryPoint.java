@@ -9,6 +9,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.payload.ApiResponse;
+import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +25,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
 
         log.error("Not Authenticated Request", authException);
-        ApiResponse<Object> apiResponse =
         ErrorStatus errorStatus = ErrorStatus.UNAUTHORIZED;
         ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getHttpStatus().name(), errorStatus.getMessage());
         String responseBody = new ObjectMapper().writeValueAsString(apiResponse);
