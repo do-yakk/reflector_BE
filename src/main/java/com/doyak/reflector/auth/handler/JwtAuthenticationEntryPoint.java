@@ -25,7 +25,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         log.error("Not Authenticated Request", authException);
         ApiResponse<Object> apiResponse =
-                ApiResponse.onFailure("COMMON401", HttpStatus.UNAUTHORIZED.name(), "인증이 필요합니다.");
+        ErrorStatus errorStatus = ErrorStatus.UNAUTHORIZED;
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getHttpStatus().name(), errorStatus.getMessage());
         String responseBody = new ObjectMapper().writeValueAsString(apiResponse);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
