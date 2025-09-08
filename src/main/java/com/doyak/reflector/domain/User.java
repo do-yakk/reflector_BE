@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Getter
@@ -32,8 +33,10 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 	
+	@NonNull
 	private String email;
 	
+	@NonNull
 	private String password;
 	
 	@Override
