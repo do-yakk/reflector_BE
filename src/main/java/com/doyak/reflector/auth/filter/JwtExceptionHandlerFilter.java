@@ -9,6 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.doyak.reflector.auth.handler.JwtExceptionHandler;
 import com.doyak.reflector.payload.ApiResponse;
+import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
@@ -32,8 +33,8 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
 
     public void setErrorResponse(HttpStatus status, HttpServletRequest req,
                                  HttpServletResponse res, Throwable ex) throws IOException {
-        ApiResponse<Object> apiResponse =
-                ApiResponse.onFailure("COMMON401", HttpStatus.UNAUTHORIZED.name(), ex.getMessage());
+        ErrorStatus errorStatus = ErrorStatus.UNAUTHORIZED;
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getHttpStatus().name(), errorStatus.getMessage());
         String responseBody = new ObjectMapper().writeValueAsString(apiResponse);
         res.setStatus(status.value());
         res.setContentType("application/json");
