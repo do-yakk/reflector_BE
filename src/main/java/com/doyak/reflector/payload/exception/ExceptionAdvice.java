@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -25,6 +26,21 @@ public class ExceptionAdvice {
     public ResponseEntity<Object> handleGeneralException(GeneralException e, WebRequest request) {
         ErrorReasonDTO errorReason = e.getErrorReason();
         return handleExceptionInternal(e, errorReason, new HttpHeaders(), request);
+    }
+    
+    // 검증 실패 예외 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException e, WebRequest request) {
+        String errorMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+
+        ErrorReasonDTO reason = ErrorReasonDTO.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .isSuccess(false)
+                .code("VALIDATION_ERROR")
+                .message(errorMessage)
+                .build();
+        
+        return handleExceptionInternal(e, reason, new HttpHeaders(), request);
     }
 
     // 예측 못한 예외 처리 

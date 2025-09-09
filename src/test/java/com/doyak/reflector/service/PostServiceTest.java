@@ -34,7 +34,7 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User();
+        user = User.builder().email("aa").password("bb").build();
         userRepository.save(user);
     }
 
