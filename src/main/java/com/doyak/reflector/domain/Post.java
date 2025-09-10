@@ -46,6 +46,11 @@ public class Post extends BaseEntity{
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Block> blocks = new ArrayList<>();
 	
+	// JPA가 사용할 기본 생성자 
+	protected Post() {
+		
+	}
+	
 	// 생성자 
 	public Post(User user, Site site, Integer level, String title, String content) {
 		this.user = user;
