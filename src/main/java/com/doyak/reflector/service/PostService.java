@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.doyak.reflector.converter.PostConverter;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.PostRequest;
@@ -18,51 +19,44 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PostService {
-	
-	private final PostRepository postRepository;
-	
-	@Transactional
-	public PostResponse createPost(User user, PostRequest request) {
-		Post post = new Post(user, request.getSite(), request.getLevel(), request.getTitle(), request.getContent());
-		Post saved = postRepository.save(post);
-		return toResponse(saved);
-	}
-	
-	public PostResponse getPost(Long postId) {
-		Post post = findPostById(postId);
-		return toResponse(post);
-	}
-	
-	@Transactional
-	public PostResponse updatePost(Long postId, PostRequest request) {
-		Post post = findPostById(postId);
-		post.update(request.getSite(), request.getLevel(), request.getTitle(), request.getContent());
-		Post updated = postRepository.save(post);
-		return toResponse(updated);
-	}
-	
-	@Transactional
-	public void deletePost(Long postId) {
-		Post post = findPostById(postId);
-		postRepository.delete(post);
-	}
-	
-	// 특정 유저의 포스트 목록
-	public List<PostResponse> gettAllPostsByUsers(User user) {
-		List<Post> posts = postRepository.findAllByUserOrderByCreatedAtDesc(user);
-		return posts.stream().map(this::toResponse).toList();
-	}
-	
-	
-	// 포스트가 존재하는지 찾기 
-	private Post findPostById(Long postId) {
-		return postRepository.findById(postId)
-				.orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
-	}
-	
-	// 응답 통일 
-	private PostResponse toResponse(Post post) {
-		return new PostResponse(post.getPostId(), post.getSite(), post.getLevel(), post.getTitle(), post.getContent());
-	}
+    
+    private final PostRepository postRepository;
+    private final PostConverter postConverter;
 
+    @Transactional
+    public PostResponse createPost(User user, PostRequest request) {
+        Post post = postConverter.toEntity(request, user);
+        Post saved = postRepository.save(post);
+        return postConverter.toResponse(saved);
+    }
+
+    public PostResponse getPost(Long postId) {
+        Post post = findPostById(postId);
+        return postConverter.toResponse(post);
+    }
+
+    @Transactional
+    public PostResponse updatePost(Long postId, PostRequest request) {
+        Post post = findPostById(postId);
+        postConverter.updateEntity(post, request);
+        Post updated = postRepository.save(post);
+        return postConverter.toResponse(updated);
+    }
+
+    @Transactional
+    public Long deletePost(Long postId) {
+        Post post = findPostById(postId);
+        postRepository.delete(post);
+        return postId;
+    }
+
+    public List<PostResponse> getAllPostsByUser(User user) {
+        List<Post> posts = postRepository.findAllByUserOrderByCreatedAtDesc(user);
+        return postConverter.toResponseList(posts);
+    }
+
+    private Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+    }
 }
