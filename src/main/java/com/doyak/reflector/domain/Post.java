@@ -2,6 +2,7 @@ package com.doyak.reflector.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.doyak.reflector.domain.common.BaseEntity;
 import com.doyak.reflector.domain.enums.Site;
@@ -19,10 +20,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Table(name = "posts")
 public class Post extends BaseEntity{
 	
 	@Id
@@ -45,20 +55,6 @@ public class Post extends BaseEntity{
 	
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Block> blocks = new ArrayList<>();
-	
-	// JPA가 사용할 기본 생성자 
-	protected Post() {
-		
-	}
-	
-	// 생성자 
-	public Post(User user, Site site, Integer level, String title, String content) {
-		this.user = user;
-		this.site = site;
-		this.level = level;
-		this.title = title;
-		this.content = content;
-	}
 
 	// 업데이트 
 	public void update(Site site, Integer level, String title, String content) {

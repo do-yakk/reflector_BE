@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.domain.Post;
+import com.doyak.reflector.domain.Post.PostBuilder;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.PostRequest;
 import com.doyak.reflector.dto.response.PostResponse;
@@ -15,11 +16,13 @@ public class PostConverter {
 
     // 생성
     public Post toEntity(PostRequest request, User user) {
-        return new Post(user,
-                        request.getSite(),
-                        request.getLevel(),
-                        request.getTitle(),
-                        request.getContent());
+        return Post.builder()
+        		.site(request.getSite())
+        		.level(request.getLevel())
+        		.title(request.getTitle())
+        		.content(request.getContent())
+        		.user(user)
+        		.build();
     }
 
     // 업데이트
