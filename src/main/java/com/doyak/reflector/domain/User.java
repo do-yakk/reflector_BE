@@ -1,6 +1,5 @@
 package com.doyak.reflector.domain;
 
-
 import java.util.Collection;
 import java.util.UUID;
 
