@@ -50,7 +50,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse.PostInfo> getAllPostsByUser(User user) {
+    public List<PostResponse.PosOverview> getAllPostsByUser(User user) {
         List<Post> posts = postRepository.findAllByUserOrderByCreatedAtDesc(user);
         return postConverter.toResponseList(posts);
     }
