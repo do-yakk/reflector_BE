@@ -31,21 +31,21 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostResponse.PostInfo getPost(Long postId) {
-        Post post = findPostById(postId);
+    public PostResponse.PostInfo getPost(User user, Long postId) {
+        Post post = findPostById(user, postId);
         return postConverter.toResponse(post);
     }
 
     @Transactional
-    public PostResponse.PostInfo updatePost(Long postId, PostRequest.PostCommand command) {
-        Post post = findPostById(postId);
+    public PostResponse.PostInfo updatePost(User user, Long postId, PostRequest.PostCommand command) {
+        Post post = findPostById(user, postId);
         post.update(command.getSite(), command.getLevel(), command.getTitle(), command.getContent());
         return postConverter.toResponse(post);
     }
 
     @Transactional
-    public void deletePost(Long postId) {
-        Post post = findPostById(postId);
+    public void deletePost(User user, Long postId) {
+        Post post = findPostById(user, postId);
         postRepository.delete(post);
     }
 
@@ -55,8 +55,12 @@ public class PostService {
         return postConverter.toResponseList(posts);
     }
 
-    private Post findPostById(Long postId) {
-        return postRepository.findById(postId)
+    private Post findPostById(User user, Long postId) {
+    	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+    	if (!post.getUser().getId().equals(user.getId())) {
+    		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
+    	}
+        return post;
     }
 }

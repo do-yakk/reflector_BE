@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseErrorCode {
 	
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST4001", "게시글을 찾을 수 없습니다."),
+    POST_FORBIDDEN(HttpStatus.FORBIDDEN, "POST4002", "다른 사용자의 게시글입니다."),
 
 	// JWT 토큰 관련 에러 
 	NOT_VALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4001", "유효하지 않은 토큰입니다."),
