@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -42,12 +43,14 @@ public class PostConverter {
     }
 
     // 리스트 
-    public List<PostResponse.PostInfo> toResponseList(List<Post> posts) {
-    	return Optional.ofNullable(posts)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(this::toResponse)
-                .toList();
-
+    public List<PostResponse.PosOverview> toResponseList(List<Post> posts) {    	
+    	return posts.stream()
+    		.map(post -> PostResponse.PosOverview.builder()
+    				.postId(post.getPostId())
+    				.title(post.getTitle())
+    				.level(post.getLevel())
+    				.site(post.getSite())
+    				.build())
+        .collect(Collectors.toList());
     }
 }

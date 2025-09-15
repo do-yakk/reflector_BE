@@ -24,4 +24,15 @@ public class PostResponse {
 		private String createdAt;
 	    private String updatedAt;
 	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class PosOverview {
+		private Long postId;
+		private Site site;
+		private Integer level;
+		private String title;
+	}
 }
