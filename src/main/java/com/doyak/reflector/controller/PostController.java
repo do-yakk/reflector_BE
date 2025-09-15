@@ -63,8 +63,8 @@ public class PostController {
 	
 	@GetMapping()
 	@Operation(summary = "전체 포스트", description = "로그인한 사용자의 전체 포스트를 가져옵니다.")
-	public ApiResponse<List<PostResponse.PosOverview>> getOverview(@AuthenticationPrincipal User user) {
-		List<PostResponse.PosOverview> posts = postService.getAllPostsByUser(user);
+	public ApiResponse<List<PostResponse.PostOverview>> getOverview(@AuthenticationPrincipal User user) {
+		List<PostResponse.PostOverview> posts = postService.getAllPostsByUser(user);
 		return ApiResponse.onSuccess(posts);
 	}
 

@@ -43,9 +43,9 @@ public class PostConverter {
     }
 
     // 리스트 
-    public List<PostResponse.PosOverview> toResponseList(List<Post> posts) {    	
+    public List<PostResponse.PostOverview> toResponseList(List<Post> posts) {    	
     	return posts.stream()
-    		.map(post -> PostResponse.PosOverview.builder()
+    		.map(post -> PostResponse.PostOverview.builder()
     				.postId(post.getPostId())
     				.title(post.getTitle())
     				.level(post.getLevel())

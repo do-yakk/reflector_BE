@@ -29,7 +29,7 @@ public class PostResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @Getter
-	public static class PosOverview {
+	public static class PostOverview {
 		private Long postId;
 		private Site site;
 		private Integer level;
