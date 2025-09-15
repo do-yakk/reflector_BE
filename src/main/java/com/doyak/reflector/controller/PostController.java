@@ -28,33 +28,32 @@ public class PostController {
 	
 	@PostMapping()
 	@Operation(summary = "포스트 생성", description = "포스트 내용을 입력해주세요. 단, 로그인 상태여야 합니다.")
-	public ApiResponse<PostResponse> createPost(@AuthenticationPrincipal User user, 
-												@RequestBody PostRequest request) {
-		PostResponse response = postService.createPost(user, request);
-		return ApiResponse.onSuccess(response);
+	public ApiResponse<PostResponse.PostInfo> createPost(@AuthenticationPrincipal User user, 
+												@RequestBody PostRequest.PostCommand command) {
+		PostResponse.PostInfo info = postService.createPost(user, command);
+		return ApiResponse.onSuccess(info);
 	}
 	
 	@GetMapping("/{postId}")
 	@Operation(summary = "포스트 읽기", description = "읽어오길 원하는 포스트 번호를 입력해주세요.")
-	public ApiResponse<PostResponse> getPost(@PathVariable("postId") Long postId) {
-		PostResponse response =  postService.getPost(postId);
-		return ApiResponse.onSuccess(response);
+	public ApiResponse<PostResponse.PostInfo> getPost(@PathVariable("postId") Long postId) {
+		PostResponse.PostInfo info =  postService.getPost(postId);
+		return ApiResponse.onSuccess(info);
 	}
 	
 	@PutMapping("/{postId}")
 	@Operation(summary = "포스트 수정", description = "수정할 포스트 내용을 입력해주세요.")
-	public ApiResponse<PostResponse> updatePost(@PathVariable("postId") Long postId,
-											@RequestBody PostRequest request) {
-		PostResponse response =  postService.updatePost(postId, request);
-		return ApiResponse.onSuccess(response);
+	public ApiResponse<PostResponse.PostInfo> updatePost(@PathVariable("postId") Long postId,
+											@RequestBody PostRequest.PostCommand command) {
+		PostResponse.PostInfo info =  postService.updatePost(postId, command);
+		return ApiResponse.onSuccess(info);
 	}
 	
 	@DeleteMapping("/{postId}")
 	@Operation(summary = "포스트 삭제", description = "삭제할 포스트 번호를 입력해주세요.")
-	public ApiResponse<Long> deletePost(@PathVariable("postId") Long postId) {
-		Long deletedId = postService.deletePost(postId);
-		return ApiResponse.onSuccess(deletedId);
+	public ApiResponse<Void> deletePost(@PathVariable("postId") Long postId) {
+		postService.deletePost(postId);
+		return ApiResponse.onSuccess(null);
 	}
-
 
 }
