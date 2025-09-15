@@ -2,4 +2,37 @@ package com.doyak.reflector.dto.response;
 
 import com.doyak.reflector.domain.enums.Site;
 
-public record PostResponse(Long postId, Site site, Integer level, String title, String content) {}
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+public class PostResponse {
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class PostInfo {
+		private Long postId;
+		private Site site;
+		private Integer level;
+		private String title;
+		private String content;	
+		private String author;
+		private String createdAt;
+	    private String updatedAt;
+	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class PostOverview {
+		private Long postId;
+		private Site site;
+		private Integer level;
+		private String title;
+	}
+}
