@@ -47,4 +47,17 @@ public class UserRequest {
 		String email;
 	}
 	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class EmailVerifyDTO {
+		
+		@NotBlank(message = "이메일은 필수 입력 값입니다.")
+		String email;
+		
+		@Pattern(regexp = "^[0-9]{6}$", message = "인증 코드는 숫자 6자리여야 합니다.")
+		String code;
+	}
+	
 }

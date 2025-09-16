@@ -54,4 +54,12 @@ public class EmailService {
 		return UserConverter.toEmailVerifyResponse(true);
 	}
 	
+	public UserResponse.EmailVerifyDTO verifyEmailCode(UserRequest.EmailVerifyDTO emailVerifyDTO) {
+		String codeFoundByEmail = redisUtil.getData(emailVerifyDTO.getEmail());
+		if (codeFoundByEmail == null) {
+			return UserConverter.toEmailVerifyResponse(false);
+		}
+		return UserConverter.toEmailVerifyResponse(codeFoundByEmail.equals(emailVerifyDTO.getCode()));
+	}
+	
 }
