@@ -1,6 +1,7 @@
 package com.doyak.reflector.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,4 +36,15 @@ public class UserRequest {
 		@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
 		String password;
 	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class UserEmailDTO {
+		
+		@NotBlank(message = "이메일은 필수 입력 값입니다.")
+		String email;
+	}
+	
 }

@@ -16,4 +16,12 @@ public class UserResponse {
 		String email;
 		String token;
 	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+    public static class EmailVerifyDTO {
+		Boolean status;
+	}
 }
