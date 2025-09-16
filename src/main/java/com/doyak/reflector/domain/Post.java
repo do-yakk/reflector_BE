@@ -2,7 +2,6 @@ package com.doyak.reflector.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.doyak.reflector.domain.common.BaseEntity;
 import com.doyak.reflector.domain.enums.Site;
