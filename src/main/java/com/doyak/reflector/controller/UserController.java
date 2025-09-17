@@ -40,9 +40,9 @@ public class UserController {
 	}
 	
 	@PutMapping
-	@Operation(summary = "회원 정보 수정", description = "변경할 이메일/비밀번호를 입력해주세요.")
+	@Operation(summary = "회원 정보 수정", description = "변경할 이메일/비밀번호를 입력해주세요. 이메일 변경 시 재로그인이 필요합니다.")
 	public ApiResponse<UserResponse.UserUpdateDTO> update(@AuthenticationPrincipal User user, 
-														  @RequestBody UserRequest.UserUpdateDTO request) {
+														  @Valid @RequestBody UserRequest.UserUpdateDTO request) {
 		UserResponse.UserUpdateDTO response = userService.update(user, request);
 		return ApiResponse.onSuccess(response);
 	}

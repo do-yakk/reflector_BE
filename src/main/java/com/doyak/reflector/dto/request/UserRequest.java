@@ -42,8 +42,10 @@ public class UserRequest {
 	@AllArgsConstructor
 	public static class UserUpdateDTO {
 		
+		@NotBlank(message = "이메일을 입력해주세요. 변경하지 않을 것이라면 기존의 이메일을 입력해주세요.")
 		String email;
 		
+		@NotBlank(message = "비밀번호를 입력해주세요. 변경하지 않을 것이라면 기존의 비밀번호를 입력해주세요.")
 		String password;
 	}
 	
