@@ -19,7 +19,7 @@ public class TextBlock extends Block{
 	private String content;
 	
 	// 업데이트  
-	public void update(String newContent) {
+	public void update(String content) {
 		this.content = content == null ? "" : content;
 	}
 }

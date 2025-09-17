@@ -30,8 +30,8 @@ public class CodeBlock extends Block {
 	private double performMem;
 	
 	// 업데이트 
-	public void update(String newContent, Language language, double performTime, double performMem) {
-	    this.content = newContent;
+	public void update(String content, Language language, double performTime, double performMem) {
+	    this.content = content;
 	    this.language = language;
 	    this.performTime = performTime;
 	    this.performMem = performMem;
