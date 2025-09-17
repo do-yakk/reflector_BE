@@ -65,4 +65,13 @@ public class UserService {
     	
     	return UserConverter.toUpdateResponse(findUser);
     }
+    
+    @Transactional
+    public UserResponse.UserDeleteDTO delete(User user) {
+    	User findUser = userRepository.findByEmail(user.getEmail())
+				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+    	
+    	userRepository.delete(findUser);
+    	return UserConverter.toDeleteResponse(findUser);
+    }
 }

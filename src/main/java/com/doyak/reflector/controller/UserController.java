@@ -1,6 +1,7 @@
 package com.doyak.reflector.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +44,13 @@ public class UserController {
 	public ApiResponse<UserResponse.UserUpdateDTO> update(@AuthenticationPrincipal User user, 
 														  @RequestBody UserRequest.UserUpdateDTO request) {
 		UserResponse.UserUpdateDTO response = userService.update(user, request);
+		return ApiResponse.onSuccess(response);
+	}
+	
+	@DeleteMapping
+	@Operation(summary = "회원 탈퇴", description = "비밀번호를 입력해주세요.")
+	public ApiResponse<UserResponse.UserDeleteDTO> delete(@AuthenticationPrincipal User user) {
+		UserResponse.UserDeleteDTO response = userService.delete(user);
 		return ApiResponse.onSuccess(response);
 	}
 
