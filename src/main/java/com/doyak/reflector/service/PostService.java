@@ -45,8 +45,7 @@ public class PostService {
 
     @Transactional
     public void deletePost(User user, Long postId) {
-        Post post = findPostById(user, postId);
-        postRepository.delete(post);
+        postRepository.deleteById(postId);
     }
 
     @Transactional(readOnly = true)
