@@ -54,7 +54,7 @@ public class User extends BaseEntity implements UserDetails {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             this.password = passwordEncoder.encode(user.getPassword());
         }
-        if (user.getEmail() != null) {
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             this.email = user.getEmail();
         }
     }

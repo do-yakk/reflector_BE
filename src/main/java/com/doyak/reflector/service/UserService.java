@@ -58,7 +58,7 @@ public class UserService {
     	User findUser = userRepository.findByEmail(user.getEmail())
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     	
-    	if (userRepository.findByEmail(request.getEmail()).isPresent())
+    	if (!request.getEmail().equals(user.getEmail()) && userRepository.findByEmail(request.getEmail()).isPresent())
     		throw new UserHandler(ErrorStatus.USER_ALREADY_EXIST);
     	
     	findUser.updateUser(request, passwordEncoder);
