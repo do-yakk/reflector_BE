@@ -60,6 +60,7 @@ public class SecurityConfig {
             
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers("/api/users/*").permitAll()
+					.requestMatchers("/api/users/verification/email", "/api/users/verification/email/*").permitAll()
                     .requestMatchers("/api/posts").permitAll()
                     .requestMatchers(AUTH_WHITELIST).permitAll()
 					.anyRequest().authenticated())
