@@ -60,7 +60,6 @@ public class BlockConverter {
     private BlockResponse.Text toTextResponse(TextBlock block) {
         return BlockResponse.Text.builder()
                 .content(block.getContent())
-                .orderIndex(block.getOrderIndex())
                 .build();
     }
 

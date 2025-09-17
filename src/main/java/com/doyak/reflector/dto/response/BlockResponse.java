@@ -16,7 +16,6 @@ public interface BlockResponse {
     @Getter
 	public class Text implements BlockResponse {
         private String content;
-        private Integer orderIndex;
     }
 	
 	@Builder
