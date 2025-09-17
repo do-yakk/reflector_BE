@@ -45,16 +45,16 @@ public class UserController {
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@PostMapping("/verification/email")
+	@PostMapping("/verification/emails")
 	@Operation(summary = "이메일 인증번호 발송", description = "인증번호를 발송할 이메일을 입력해주세요.")
 	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.UserEmailDTO request) {
 		UserResponse.EmailVerifyDTO response = emailService.sendEmail(request);
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@PostMapping("/verification/email/verify")
+	@PostMapping("/verification/emails/verify")
 	@Operation(summary = "이메일 인증번호 코드 인증", description = "인증번호를 입력해주세요.")
-	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
+	public ApiResponse<UserResponse.EmailVerifyDTO> verifyCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
 		UserResponse.EmailVerifyDTO response = emailService.verifyEmailCode(request);
 		return ApiResponse.onSuccess(response);
 	}
