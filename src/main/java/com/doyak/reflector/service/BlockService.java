@@ -58,22 +58,14 @@ public class BlockService {
         Block block = findBlockById(blockId);
 
         if (request instanceof BlockRequest.TextCommand textRequest && block instanceof TextBlock textBlock) {
-            updateTextBlock(textBlock, textRequest);
+            textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
         } else if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
-            updateCodeBlock(codeBlock, codeRequest);
+        	codeBlock.update(codeRequest.getContent(), codeRequest.getLanguage(), codeRequest.getPerformTime(), codeRequest.getPerformMem());
             return blockConverter.toResponse(codeBlock);
         } else {
         	throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
         }
-    }
-
-    private void updateTextBlock(TextBlock block, BlockRequest.TextCommand request) {
-    	block.update(request.getContent());
-    }
-
-    private void updateCodeBlock(CodeBlock block, BlockRequest.CodeCommand request) {
-        block.update(request.getContent(), request.getLanguage(), request.getPerformTime(), request.getPerformMem());
     }
 
 
