@@ -38,11 +38,12 @@ public class UserController {
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@PutMapping("/users")
+	@PutMapping
 	@Operation(summary = "회원 정보 수정", description = "변경할 이메일/비밀번호를 입력해주세요.")
 	public ApiResponse<UserResponse.UserUpdateDTO> update(@AuthenticationPrincipal User user, 
 														  @RequestBody UserRequest.UserUpdateDTO request) {
 		UserResponse.UserUpdateDTO response = userService.update(user, request);
 		return ApiResponse.onSuccess(response);
 	}
+
 }
