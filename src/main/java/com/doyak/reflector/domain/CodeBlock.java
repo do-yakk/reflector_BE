@@ -28,4 +28,12 @@ public class CodeBlock extends Block {
 	
 	private double performTime;
 	private double performMem;
+	
+	// 업데이트 
+	public void update(String newContent, Language language, double performTime, double performMem) {
+	    this.content = newContent;
+	    this.language = language;
+	    this.performTime = performTime;
+	    this.performMem = performMem;
+	}
 }

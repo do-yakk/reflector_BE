@@ -17,4 +17,9 @@ public class TextBlock extends Block{
 	
 	@Lob
 	private String content;
+	
+	// 업데이트  
+	public void update(String newContent) {
+		this.content = content == null ? "" : content;
+	}
 }
