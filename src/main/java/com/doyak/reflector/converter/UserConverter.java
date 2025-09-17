@@ -1,7 +1,5 @@
 package com.doyak.reflector.converter;
 
-import java.util.UUID;
-
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.response.UserResponse;
 import com.doyak.reflector.dto.request.UserRequest;
@@ -19,6 +17,12 @@ public class UserConverter {
 		return User.builder()
 				.email(userDto.getEmail())
 				.password(encodedPassword)
+				.build();
+	}
+	
+	public static UserResponse.UserUpdateDTO toUpdateResponse(User user) {
+		return UserResponse.UserUpdateDTO.builder()
+				.email(user.getEmail())
 				.build();
 	}
 }

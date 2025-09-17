@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.doyak.reflector.domain.common.BaseEntity;
+import com.doyak.reflector.dto.request.UserRequest;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +48,15 @@ public class User extends BaseEntity implements UserDetails {
 	@Override
     public String getUsername() {
         return this.email;
+    }
+	
+	public void updateUser(UserRequest.UserUpdateDTO user, PasswordEncoder passwordEncoder) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            this.password = passwordEncoder.encode(user.getPassword());
+        }
+        if (user.getEmail() != null) {
+            this.email = user.getEmail();
+        }
     }
 	
 }

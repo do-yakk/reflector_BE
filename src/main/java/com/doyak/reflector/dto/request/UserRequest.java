@@ -35,4 +35,16 @@ public class UserRequest {
 		@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
 		String password;
 	}
+	
+	@Builder
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class UserUpdateDTO {
+		
+		String email;
+		
+		String password;
+	}
+	
 }

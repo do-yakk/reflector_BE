@@ -53,5 +53,16 @@ public class UserService {
 		return UserConverter.toLoginResponse(user, accessToken);
 	}
     
-
+    @Transactional
+    public UserResponse.UserUpdateDTO update(User user, UserRequest.UserUpdateDTO request) {
+    	User findUser = userRepository.findByEmail(user.getEmail())
+				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+    	
+    	if (userRepository.findByEmail(request.getEmail()).isPresent())
+    		throw new UserHandler(ErrorStatus.USER_ALREADY_EXIST);
+    	
+    	findUser.updateUser(request, passwordEncoder);
+    	
+    	return UserConverter.toUpdateResponse(findUser);
+    }
 }
