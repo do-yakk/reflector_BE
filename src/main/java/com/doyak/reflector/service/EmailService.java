@@ -2,6 +2,7 @@ package com.doyak.reflector.service;
 
 import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,9 @@ public class EmailService {
 	private final JavaMailSender javaMailSender;
 	private final RedisUtil redisUtil;
 	private static final SecureRandom secureRandom = new SecureRandom();
-	private static final String senderEmail = "email";
+	
+	@Value("${spring.mail.username}")
+	private String senderEmail;
 	
 	private String createCode() {
 		int num = secureRandom.nextInt(1_000_000);
@@ -47,14 +50,14 @@ public class EmailService {
 		if (redisUtil.existData(email)) {
 			redisUtil.deleteData(email);
 		}
-		
+		System.out.println("Sender: " + senderEmail);
 		SimpleMailMessage message = createEmailVerifyForm(email);
 		javaMailSender.send(message);
 		
 		return UserConverter.toEmailVerifyResponse(true);
 	}
 	
-	public UserResponse.EmailVerifyDTO verifyEmailCode(UserRequest.EmailVerifyDTO emailVerifyDTO) {
+	public UserResponse.EmailVerifyDTO verifyEmailCode(UserRequest.EmailCodeDTO emailVerifyDTO) {
 		String codeFoundByEmail = redisUtil.getData(emailVerifyDTO.getEmail());
 		if (codeFoundByEmail == null) {
 			return UserConverter.toEmailVerifyResponse(false);

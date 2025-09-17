@@ -51,7 +51,7 @@ public class UserRequest {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @Getter
-	public static class EmailVerifyDTO {
+	public static class EmailCodeDTO {
 		
 		@NotBlank(message = "이메일은 필수 입력 값입니다.")
 		String email;

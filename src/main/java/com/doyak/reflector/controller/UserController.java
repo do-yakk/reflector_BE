@@ -46,9 +46,9 @@ public class UserController {
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@GetMapping("/email-verify")
+	@PostMapping("/email-verify-code")
 	@Operation(summary = "이메일 인증번호 코드 인증", description = "인증번호를 입력해주세요.")
-	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.EmailVerifyDTO request) {
+	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
 		UserResponse.EmailVerifyDTO response = emailService.verifyEmailCode(request);
 		return ApiResponse.onSuccess(response);
 	}
