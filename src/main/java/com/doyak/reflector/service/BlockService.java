@@ -72,7 +72,14 @@ public class BlockService {
     // 블럭 삭제 
     @Transactional
     public void deleteBlock(Long blockId) {
-        blockRepository.deleteById(blockId);
+        Block block = blockRepository.findById(blockId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
+
+        int deletedOrderIndex = block.getOrderIndex();
+        Long postId = block.getPost().getPostId();
+
+        blockRepository.delete(block);
+        blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
     private Block findBlockById(Long blockId) {

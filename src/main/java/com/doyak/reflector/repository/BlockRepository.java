@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,12 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
 
 	@Query("SELECT MAX(b.orderIndex) FROM Block b WHERE b.post = :post")
 	Optional<Integer> findMaxOrderIndexByPost(@Param("post") Post post);
+
+	@Modifying
+    @Query("UPDATE Block b SET b.orderIndex = b.orderIndex - 1 " +
+           "WHERE b.post.id = :postId AND b.orderIndex > :deletedOrderIndex")
+    void decrementOrderIndexAfter(@Param("postId") Long postId,
+                                  @Param("deletedOrderIndex") int deletedOrderIndex);
 
 
 }
