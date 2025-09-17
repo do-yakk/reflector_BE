@@ -1,6 +1,5 @@
 package com.doyak.reflector.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,14 +38,14 @@ public class UserController {
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@PostMapping("/email-verify")
+	@PostMapping("/verification/email")
 	@Operation(summary = "이메일 인증번호 발송", description = "인증번호를 발송할 이메일을 입력해주세요.")
 	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.UserEmailDTO request) {
 		UserResponse.EmailVerifyDTO response = emailService.sendEmail(request);
 		return ApiResponse.onSuccess(response);
 	}
 	
-	@PostMapping("/email-verify-code")
+	@PostMapping("/verification/email/verify")
 	@Operation(summary = "이메일 인증번호 코드 인증", description = "인증번호를 입력해주세요.")
 	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
 		UserResponse.EmailVerifyDTO response = emailService.verifyEmailCode(request);
