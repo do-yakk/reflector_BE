@@ -38,6 +38,13 @@ public class UserController {
 		return ApiResponse.onSuccess(response);
 	}
 	
+	@PostMapping("/emails")
+	@Operation(summary = "이메일 중복 확인", description = "회원가입 할 이메일을 입력해주세요.")
+	public ApiResponse<UserResponse.EmailVerifyDTO> checkEmail(@Valid @RequestBody UserRequest.UserEmailDTO request) {
+		UserResponse.EmailVerifyDTO response = userService.checkEmail(request);
+		return ApiResponse.onSuccess(response);
+	}
+	
 	@PostMapping("/verification/email")
 	@Operation(summary = "이메일 인증번호 발송", description = "인증번호를 발송할 이메일을 입력해주세요.")
 	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.UserEmailDTO request) {
