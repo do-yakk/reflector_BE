@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.doyak.reflector.converter.UserConverter;
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
+import com.doyak.reflector.payload.code.status.ErrorStatus;
+import com.doyak.reflector.payload.exception.handler.UserHandler;
 import com.doyak.reflector.util.RedisUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -36,9 +38,9 @@ public class EmailService {
 		String code = createCode();
 		
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(email);  // 수신자
-		message.setSubject("[reflector] 인증번호를 확인해주세요.");  // 제
-		message.setText("[" + code + "]");  // 내용
+		message.setTo(email);
+		message.setSubject("[reflector] 인증번호를 확인해주세요.");
+		message.setText("[" + code + "]");
 		message.setFrom(senderEmail);
 		
 		redisUtil.setDataExpire(email, code, 60 * 3L);
@@ -50,7 +52,6 @@ public class EmailService {
 		if (redisUtil.existData(email)) {
 			redisUtil.deleteData(email);
 		}
-		System.out.println("Sender: " + senderEmail);
 		SimpleMailMessage message = createEmailVerifyForm(email);
 		javaMailSender.send(message);
 		
@@ -60,9 +61,12 @@ public class EmailService {
 	public UserResponse.EmailVerifyDTO verifyEmailCode(UserRequest.EmailCodeDTO emailVerifyDTO) {
 		String codeFoundByEmail = redisUtil.getData(emailVerifyDTO.getEmail());
 		if (codeFoundByEmail == null) {
-			return UserConverter.toEmailVerifyResponse(false);
+			throw new UserHandler(ErrorStatus.INVALID_EMAIL);
+		} else if (!codeFoundByEmail.equals(emailVerifyDTO.getCode())) {
+			throw new UserHandler(ErrorStatus.INVALID_CODE);
+		} else {
+			return UserConverter.toEmailVerifyResponse(true);
 		}
-		return UserConverter.toEmailVerifyResponse(codeFoundByEmail.equals(emailVerifyDTO.getCode()));
 	}
 	
 }
