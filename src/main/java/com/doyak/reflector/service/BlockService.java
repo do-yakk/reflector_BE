@@ -33,7 +33,7 @@ public class BlockService {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
     	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + 1;
-    	Block block = blockConverter.toBlock(request, nextOrderIndex, post);
+    	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
     }

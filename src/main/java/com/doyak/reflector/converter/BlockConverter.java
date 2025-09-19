@@ -8,6 +8,7 @@ import com.doyak.reflector.domain.Block;
 import com.doyak.reflector.domain.CodeBlock;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
+import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
@@ -17,28 +18,30 @@ import com.doyak.reflector.payload.exception.GeneralException;
 public class BlockConverter {
 
     // Request → Entity
-    public Block toBlock(BlockRequest request, int orderIndex, Post post) {
+    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user) {
         if (request instanceof BlockRequest.TextCommand textReq) {
-            return toTextEntity(textReq, orderIndex, post);
+            return toTextEntity(textReq, orderIndex, post, user);
         } else if (request instanceof BlockRequest.CodeCommand codeReq) {
-            return toCodeEntity(codeReq, orderIndex, post);
+            return toCodeEntity(codeReq, orderIndex, post, user);
         } else {
             throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
         }
     }
 
-    private TextBlock toTextEntity(BlockRequest.TextCommand request, int orderIndex, Post post) {
+    private TextBlock toTextEntity(BlockRequest.TextCommand request, int orderIndex, Post post, User user) {
         return TextBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
+        		.user(user)
                 .content(request.getContent())
                 .build();
     }
 
-    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post) {
+    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user) {
         return CodeBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
+        		.user(user)
                 .content(request.getContent())
                 .language(request.getLanguage())
                 .performTime(request.getPerformTime())
