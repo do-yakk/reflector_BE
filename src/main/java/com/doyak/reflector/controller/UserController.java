@@ -52,7 +52,7 @@ public class UserController {
 	
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴")
-	public ApiResponse<?> delete(@AuthenticationPrincipal User user) {
+	public ApiResponse<Void> delete(@AuthenticationPrincipal User user) {
 		userService.delete(user);
 		return ApiResponse.onSuccess(null);
 	}
