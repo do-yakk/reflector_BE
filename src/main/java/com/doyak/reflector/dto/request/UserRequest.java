@@ -38,16 +38,29 @@ public class UserRequest {
 	}
 	
 	@Builder
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor
-    @Getter
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@AllArgsConstructor
+	public static class UserUpdateDTO {
+		
+		@NotBlank(message = "이메일을 입력해주세요. 변경하지 않을 것이라면 기존의 이메일을 입력해주세요.")
+		String email;
+		
+		@NotBlank(message = "비밀번호를 입력해주세요. 변경하지 않을 것이라면 기존의 비밀번호를 입력해주세요.")
+		String password;
+  }
+  
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @AllArgsConstructor
+  @Getter
 	public static class UserEmailDTO {
 		
 		@NotBlank(message = "이메일은 필수 입력 값입니다.")
 		String email;
 	}
 	
-	@Builder
+	  @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @Getter

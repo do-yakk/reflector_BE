@@ -20,4 +20,10 @@ public class UserConverter {
 				.build();
 	}
 	
+	public static UserResponse.UserUpdateDTO toUpdateResponse(User user) {
+		return UserResponse.UserUpdateDTO.builder()
+				.email(user.getEmail())
+				.build();
+	}
+	
 }
