@@ -74,6 +74,6 @@ public class UserService {
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     	
     	userRepository.delete(findUser);
-    	log.info("Successfully delete user: ", findUser.getEmail());
+    	log.info("Successfully delete user");
     }
 }
