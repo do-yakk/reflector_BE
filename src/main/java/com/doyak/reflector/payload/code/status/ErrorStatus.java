@@ -35,7 +35,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // 사용자 관련 에러
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 유저입니다."),
     USER_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "USER4002", "이미 존재하는 유저입니다."),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "USER4003", "비밀번호가 불일치 합니다.");
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "USER4003", "비밀번호가 불일치 합니다."),
+    INVALID_EMAIL(HttpStatus.NOT_FOUND, "USER4004", "인증번호를 확인할 수 없습니다. 이메일을 다시 확인하거나 인증번호를 새로 요청해주세요."),
+    INVALID_CODE(HttpStatus.BAD_REQUEST, "USER4005", "인증번호가 불일치 합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
