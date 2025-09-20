@@ -45,12 +45,6 @@ public class BlockController {
     public ApiResponse<BlockResponse> getBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId) {
         return ApiResponse.onSuccess(blockService.getBlock(blockId));
     }
-
-    @GetMapping
-	@Operation(summary = "전체 블럭 읽기")
-    public ApiResponse<List<BlockResponse>> getBlocksByPost(@PathVariable("postId") Long postId) {
-        return ApiResponse.onSuccess(blockService.getBlocksByPostId(postId));
-    }
     
     @PutMapping("/text/{blockId}")
     @Operation(summary = "텍스트 블럭 수정", description = "수정할 텍스트 내용을 입력해주세요.")
