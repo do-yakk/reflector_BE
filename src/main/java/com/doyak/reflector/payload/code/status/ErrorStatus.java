@@ -18,9 +18,13 @@ public enum ErrorStatus implements BaseErrorCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 	
-    // Post
+    // Post 에러 
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST4001", "게시글을 찾을 수 없습니다."),
     POST_FORBIDDEN(HttpStatus.FORBIDDEN, "POST4002", "다른 사용자의 게시글입니다."),
+    
+    // Block 에러 
+    BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK4001", "블럭을 찾을 수 없습니다."),
+    UNSUPPORTED_BLOCK_TYPE(HttpStatus.BAD_REQUEST, "BLOCK4002", "지원하지 않는 블럭타입입니다."),
 
 	// JWT 토큰 관련 에러 
 	NOT_VALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4001", "유효하지 않은 토큰입니다."),

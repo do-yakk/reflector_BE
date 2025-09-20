@@ -61,7 +61,6 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers("/api/users/*").permitAll()
 					.requestMatchers("/api/users/verification/**").permitAll()
-                    .requestMatchers("/api/posts").permitAll()
                     .requestMatchers(AUTH_WHITELIST).permitAll()
 					.anyRequest().authenticated())
 			
