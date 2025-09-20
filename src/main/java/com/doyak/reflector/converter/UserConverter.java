@@ -26,9 +26,4 @@ public class UserConverter {
 				.build();
 	}
 	
-	public static UserResponse.UserDeleteDTO toDeleteResponse(User user) {
-		return UserResponse.UserDeleteDTO.builder()
-				.email(user.getEmail())
-				.build();
-	}
 }
