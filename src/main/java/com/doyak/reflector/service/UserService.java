@@ -24,10 +24,9 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     
-    public UserResponse.EmailVerifyDTO checkEmail(UserRequest.UserEmailDTO request) {
+    public void checkEmail(UserRequest.UserEmailDTO request) {
     	if (userRepository.findByEmail(request.getEmail()).isPresent())
     		throw new UserHandler(ErrorStatus.USER_ALREADY_EXIST);
-    	return UserConverter.toEmailVerifyResponse(true);
     }
     
     @Transactional
