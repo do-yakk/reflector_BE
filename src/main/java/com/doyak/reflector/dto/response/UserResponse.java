@@ -25,11 +25,4 @@ public class UserResponse {
 		String email;
 	}
 	
-	@Builder
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor
-    @Getter
-	public static class UserDeleteDTO {
-		String email;
-	}
 }
