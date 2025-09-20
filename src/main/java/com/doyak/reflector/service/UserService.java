@@ -15,7 +15,9 @@ import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.handler.UserHandler;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -67,11 +69,11 @@ public class UserService {
     }
     
     @Transactional
-    public UserResponse.UserDeleteDTO delete(User user) {
+    public void delete(User user) {
     	User findUser = userRepository.findByEmail(user.getEmail())
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     	
     	userRepository.delete(findUser);
-    	return UserConverter.toDeleteResponse(findUser);
+    	log.info("Successfully delete user: ", findUser.getEmail());
     }
 }

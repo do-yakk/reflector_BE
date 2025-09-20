@@ -50,8 +50,8 @@ public class UserController {
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴", description = "비밀번호를 입력해주세요.")
 	public ApiResponse<UserResponse.UserDeleteDTO> delete(@AuthenticationPrincipal User user) {
-		UserResponse.UserDeleteDTO response = userService.delete(user);
-		return ApiResponse.onSuccess(response);
+		userService.delete(user);
+		return ApiResponse.onSuccess(null);
 	}
 
 }
