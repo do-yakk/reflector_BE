@@ -20,9 +20,4 @@ public class UserConverter {
 				.build();
 	}
 	
-	public static UserResponse.EmailVerifyDTO toEmailVerifyResponse(Boolean status) {
-		return UserResponse.EmailVerifyDTO.builder()
-				.status(status)
-				.build();
-	}
 }

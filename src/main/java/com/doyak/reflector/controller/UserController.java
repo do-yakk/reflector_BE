@@ -40,21 +40,21 @@ public class UserController {
 	
 	@PostMapping("/emails")
 	@Operation(summary = "이메일 중복 확인", description = "회원가입 할 이메일을 입력해주세요.")
-	public ApiResponse<UserResponse.EmailVerifyDTO> checkEmail(@Valid @RequestBody UserRequest.UserEmailDTO request) {
+	public ApiResponse<?> checkEmail(@Valid @RequestBody UserRequest.UserEmailDTO request) {
 		userService.checkEmail(request);
 		return ApiResponse.onSuccess(null);
 	}
 	
 	@PostMapping("/verification/emails")
 	@Operation(summary = "이메일 인증번호 발송", description = "인증번호를 발송할 이메일을 입력해주세요.")
-	public ApiResponse<UserResponse.EmailVerifyDTO> sendCode(@Valid @RequestBody UserRequest.UserEmailDTO request) {
+	public ApiResponse<?> sendCode(@Valid @RequestBody UserRequest.UserEmailDTO request) {
 		emailService.sendEmail(request);
 		return ApiResponse.onSuccess(null);
 	}
 	
 	@PostMapping("/verification/emails/verify")
 	@Operation(summary = "이메일 인증번호 코드 인증", description = "인증번호를 입력해주세요.")
-	public ApiResponse<UserResponse.EmailVerifyDTO> verifyCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
+	public ApiResponse<?> verifyCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
 		emailService.verifyEmailCode(request);
 		return ApiResponse.onSuccess(null);
 	}
