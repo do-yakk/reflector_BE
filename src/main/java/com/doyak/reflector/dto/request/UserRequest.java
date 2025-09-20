@@ -1,6 +1,7 @@
 package com.doyak.reflector.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +48,29 @@ public class UserRequest {
 		
 		@NotBlank(message = "비밀번호를 입력해주세요. 변경하지 않을 것이라면 기존의 비밀번호를 입력해주세요.")
 		String password;
+  }
+  
+  @Builder
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @AllArgsConstructor
+  @Getter
+	public static class UserEmailDTO {
+		
+		@NotBlank(message = "이메일은 필수 입력 값입니다.")
+		String email;
+	}
+	
+	  @Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class EmailCodeDTO {
+		
+		@NotBlank(message = "이메일은 필수 입력 값입니다.")
+		String email;
+		
+		@Pattern(regexp = "^[0-9]{6}$", message = "인증 코드는 숫자 6자리여야 합니다.")
+		String code;
 	}
 	
 }
