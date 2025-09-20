@@ -1,6 +1,8 @@
 package com.doyak.reflector.domain;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -10,10 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.doyak.reflector.domain.common.BaseEntity;
 import com.doyak.reflector.dto.request.UserRequest;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,6 +43,9 @@ public class User extends BaseEntity implements UserDetails {
 	
 	@NonNull
 	private String password;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -39,7 +39,7 @@ public class Post extends BaseEntity{
 	@Column(name = "post_id")
 	private Long postId;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
