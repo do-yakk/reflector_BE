@@ -2,7 +2,6 @@ package com.doyak.reflector.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.doyak.reflector.domain.common.BaseEntity;
 import com.doyak.reflector.domain.enums.Site;
@@ -40,7 +39,7 @@ public class Post extends BaseEntity{
 	@Column(name = "post_id")
 	private Long postId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
