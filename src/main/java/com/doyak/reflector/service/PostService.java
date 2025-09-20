@@ -2,6 +2,8 @@ package com.doyak.reflector.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,5 +63,13 @@ public class PostService {
     		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
     	}
         return post;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<PostResponse.PostOverview> getSortedPosts(User user, String sort, String direction, int page, int size) {
+    	Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+    	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+    	List<Post> posts = postRepository.findAllByUser(user, pageRequest);
+    	return postConverter.toResponseList(posts);
     }
 }
