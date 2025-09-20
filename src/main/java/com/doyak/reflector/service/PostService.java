@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.doyak.reflector.converter.PostConverter;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
+import com.doyak.reflector.domain.enums.SortType;
 import com.doyak.reflector.dto.request.PostRequest;
 import com.doyak.reflector.dto.response.PostResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
@@ -66,9 +67,8 @@ public class PostService {
     }
     
     @Transactional(readOnly = true)
-    public List<PostResponse.PostOverview> getSortedPosts(User user, String sort, String direction, int page, int size) {
-    	Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-    	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+    public List<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size) {
+    	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort.getField()));
     	List<Post> posts = postRepository.findAllByUser(user, pageRequest);
     	return postConverter.toResponseList(posts);
     }
