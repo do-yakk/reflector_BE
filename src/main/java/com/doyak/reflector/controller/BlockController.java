@@ -2,6 +2,7 @@ package com.doyak.reflector.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -58,10 +59,17 @@ public class BlockController {
         return ApiResponse.onSuccess(blockService.updateBlock(blockId, request));
     }
 
-    @DeleteMapping("{blockId}")
+    @DeleteMapping("/{blockId}")
 	@Operation(summary = "해당 블럭 삭제", description = "삭제하길 원하는 블럭 아이디를 입력해주세요.")
     public ApiResponse<Void> deleteBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId) {
         blockService.deleteBlock(postId, blockId);
+        return ApiResponse.onSuccess(null);
+    }
+    
+    @PatchMapping("/{blockId}")
+    @Operation(summary = "블럭 순서 변경", description = "순서 변경을 원하는 블럭 정보와 원하는 위치 인덱스를 입력해주세요.")
+    public ApiResponse<Void> reorderBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, BlockRequest.ReorderBlock request) {
+        blockService.reorderBlock(postId, blockId, request);
         return ApiResponse.onSuccess(null);
     }
 

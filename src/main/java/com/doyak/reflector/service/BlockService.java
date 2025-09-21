@@ -87,7 +87,7 @@ public class BlockService {
     }
     
     @Transactional
-    public void reorderBlocks(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
+    public void reorderBlock(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
     	Post post = postRepository.findById(postId)
     			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	
@@ -110,7 +110,7 @@ public class BlockService {
     }
     
     @Transactional
-    public void normalizeOrderIndexes(Post post) {
+    private void normalizeOrderIndexes(Post post) {
         List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
         double index = 0;
         double gap = 10;
