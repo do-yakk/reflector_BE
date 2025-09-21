@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Post 에러 
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST4001", "게시글을 찾을 수 없습니다."),
     POST_FORBIDDEN(HttpStatus.FORBIDDEN, "POST4002", "다른 사용자의 게시글입니다."),
+    PAGE_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "POST4003", "페이지 범위를 벗어났습니다."),
     
     // Block 에러 
     BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK4001", "블럭을 찾을 수 없습니다."),
