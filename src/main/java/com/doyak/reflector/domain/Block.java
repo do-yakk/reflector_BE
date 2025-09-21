@@ -35,7 +35,7 @@ public abstract class Block {
 	@JoinColumn(name = "post_id")
 	protected Post post;
 	
-	protected Integer orderIndex;
+	protected Double orderIndex;
 	
 	@Enumerated(EnumType.STRING)
 	private BlockType type;
@@ -43,5 +43,9 @@ public abstract class Block {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+	
+	public void moveTo(Double newIndex) {
+        this.orderIndex = newIndex;
+    }
 
 }

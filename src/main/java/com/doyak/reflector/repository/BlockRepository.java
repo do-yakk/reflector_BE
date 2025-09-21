@@ -25,7 +25,7 @@ public interface BlockRepository extends JpaRepository<Block, Long> {
     @Query("UPDATE Block b SET b.orderIndex = b.orderIndex - 1 " +
            "WHERE b.post.id = :postId AND b.orderIndex > :deletedOrderIndex")
     void decrementOrderIndexAfter(@Param("postId") Long postId,
-                                  @Param("deletedOrderIndex") int deletedOrderIndex);
-
-
+                                  @Param("deletedOrderIndex") Double deletedOrderIndex);
+	
+	List<Block> findAllByPostOrderByOrderIndexAsc(Post post);
 }

@@ -14,6 +14,8 @@ import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
+import com.doyak.reflector.payload.exception.handler.BlockHandler;
+import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.BlockRepository;
 import com.doyak.reflector.repository.PostRepository;
 
@@ -68,7 +70,7 @@ public class BlockService {
         Block block = blockRepository.findById(blockId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
 
-        int deletedOrderIndex = block.getOrderIndex();
+        Double deletedOrderIndex = block.getOrderIndex();
         Long postId = block.getPost().getPostId();
 
         blockRepository.delete(block);
@@ -79,5 +81,21 @@ public class BlockService {
     	Block block = blockRepository.findById(blockId)
     		    .orElseThrow(() -> new GeneralException(ErrorStatus.BLOCK_NOT_FOUND));
     	return block;
+    }
+    
+    @Transactional
+    public void reorderBlocks(Long postId, Long blockId, int newIndex) {
+    	Post post = postRepository.findById(postId)
+    			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
+    	
+    	List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    	Block movingBlock = blockRepository.findById(blockId)
+    						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+        
+    	double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+    	double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	
+    	
+        movingBlock.moveTo((prev + next) / 2);
     }
 }
