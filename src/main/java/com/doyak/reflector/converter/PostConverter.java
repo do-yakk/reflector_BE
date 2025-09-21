@@ -5,15 +5,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.PostRequest;
+import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.dto.response.PostResponse;
 
 @Component
 public class PostConverter {
+	
+	@Autowired
+	private BlockConverter blockConverter;
+	
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     // 생성
     public Post toEntity(PostRequest.PostCommand command, User user) {
@@ -25,10 +32,12 @@ public class PostConverter {
         		.user(user)
         		.build();
     }
-
+    
     // 단일 
     public PostResponse.PostInfo toResponse(Post post) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    	List<BlockResponse> blockResponses = post.getBlocks() == null 
+    	        ? List.of() 
+    	        : blockConverter.toResponseList(post.getBlocks());
         return PostResponse.PostInfo.builder()
         			.postId(post.getPostId())
         			.site(post.getSite())
@@ -36,8 +45,9 @@ public class PostConverter {
         			.title(post.getTitle())
         			.content(post.getContent())
         			.author(post.getUser().getEmail())
-        			.createdAt(post.getCreatedAt().format(formatter))
-        			.updatedAt(post.getUpdatedAt().format(formatter))
+        			.createdAt(post.getCreatedAt().format(FORMATTER))
+        			.updatedAt(post.getUpdatedAt().format(FORMATTER))
+        			.blocks(blockResponses)
         			.build();
     }
 

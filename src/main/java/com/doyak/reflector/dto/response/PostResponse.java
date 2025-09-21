@@ -1,5 +1,7 @@
 package com.doyak.reflector.dto.response;
 
+import java.util.List;
+
 import com.doyak.reflector.domain.enums.Site;
 
 import lombok.AccessLevel;
@@ -23,6 +25,7 @@ public class PostResponse {
 		private String author;
 		private String createdAt;
 	    private String updatedAt;
+	    private List<BlockResponse> blocks;
 	}
 	
 	@Builder
