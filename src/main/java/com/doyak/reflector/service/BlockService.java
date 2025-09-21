@@ -1,6 +1,9 @@
 package com.doyak.reflector.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.doyak.reflector.converter.BlockConverter;
 import com.doyak.reflector.domain.Block;
 import com.doyak.reflector.domain.CodeBlock;
+import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.dto.request.BlockRequest;
@@ -15,6 +19,7 @@ import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
 import com.doyak.reflector.repository.BlockRepository;
+import com.doyak.reflector.repository.HashtagRepository;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,14 +31,20 @@ public class BlockService {
 	private final PostRepository postRepository;
     private final BlockRepository blockRepository;
     private final BlockConverter blockConverter; 
+    
+    private final HashtagRepository hashtagRepository;
 
-    // 코드 블럭 생성  
+    // 블럭 생성  
     @Transactional
     public BlockResponse createBlock(BlockRequest request, Long postId) {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
     	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + 1;
-    	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
+        Set<Hashtag> hashtags = Collections.emptySet();
+    	if (request instanceof BlockRequest.CodeCommand codeRequest) {
+            hashtags = getHashtags(codeRequest.getHashtags()); 
+    	}
+    	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser(), hashtags);
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
     }
@@ -54,7 +65,13 @@ public class BlockService {
             textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
         } else if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
-        	codeBlock.update(codeRequest.getContent(), codeRequest.getLanguage(), codeRequest.getPerformTime(), codeRequest.getPerformMem());
+        	Set<Hashtag> hashtags = getHashtags(codeRequest.getHashtags());
+        	codeBlock.getHashtags().clear();
+        	codeBlock.getHashtags().addAll(hashtags);
+        	
+        	codeBlock.update(codeRequest.getContent(),codeRequest.getLanguage(), 
+        			codeRequest.getPerformTime(), codeRequest.getPerformMem(), codeBlock.getHashtags()
+        	);
             return blockConverter.toResponse(codeBlock);
         } else {
         	throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
@@ -73,6 +90,14 @@ public class BlockService {
 
         blockRepository.delete(block);
         blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
+    }
+    
+    private Set<Hashtag> getHashtags (Set<String> tags) {
+    	Set<Hashtag> hashtags = tags.stream()
+        	    .map(tag -> hashtagRepository.findByHash(tag)
+        	            .orElseGet(() -> hashtagRepository.save(Hashtag.builder().hash(tag).build())))
+        	    .collect(Collectors.toSet());
+    	return hashtags;
     }
     
     private Block findBlockById(Long blockId) {

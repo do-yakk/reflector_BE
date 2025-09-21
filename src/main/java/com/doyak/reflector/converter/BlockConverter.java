@@ -1,11 +1,14 @@
 package com.doyak.reflector.converter;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.domain.Block;
 import com.doyak.reflector.domain.CodeBlock;
+import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.domain.User;
@@ -18,11 +21,11 @@ import com.doyak.reflector.payload.exception.GeneralException;
 public class BlockConverter {
 
     // Request → Entity
-    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user) {
+    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user, Set<Hashtag> hashtags) {
         if (request instanceof BlockRequest.TextCommand textReq) {
             return toTextEntity(textReq, orderIndex, post, user);
         } else if (request instanceof BlockRequest.CodeCommand codeReq) {
-            return toCodeEntity(codeReq, orderIndex, post, user);
+            return toCodeEntity(codeReq, orderIndex, post, user, hashtags);
         } else {
             throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
         }
@@ -37,8 +40,8 @@ public class BlockConverter {
                 .build();
     }
 
-    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user) {
-        return CodeBlock.builder()
+    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user, Set<Hashtag> hashtags) {    	
+    	return CodeBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
         		.user(user)
@@ -46,6 +49,7 @@ public class BlockConverter {
                 .language(request.getLanguage())
                 .performTime(request.getPerformTime())
                 .performMem(request.getPerformMem())
+                .hashtags(hashtags)
                 .build();
     }
 
@@ -72,9 +76,10 @@ public class BlockConverter {
                 .language(block.getLanguage())
                 .performTime(block.getPerformTime())
                 .performMem(block.getPerformMem())
+                .hashtags(block.getHashtags())
                 .build();
     }
-
+    
     // Entity List → Response List
     public List<BlockResponse> toResponseList(List<Block> blocks) {
         return blocks.stream()
