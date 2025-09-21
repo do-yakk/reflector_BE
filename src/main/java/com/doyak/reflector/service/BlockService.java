@@ -11,6 +11,7 @@ import com.doyak.reflector.domain.CodeBlock;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.dto.request.BlockRequest;
+import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
@@ -31,10 +32,13 @@ public class BlockService {
 
     // 코드 블럭 생성  
     @Transactional
-    public BlockResponse createBlock(BlockRequest request, Long postId) {
+    public BlockResponse createBlock(BlockCommand request, Long postId) {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
-    	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + 1;
+    	
+    	int gap = 10;
+    	
+    	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + gap;
     	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
@@ -49,7 +53,7 @@ public class BlockService {
 
     // 블럭 수정
     @Transactional
-    public BlockResponse updateBlock(Long blockId, BlockRequest request) {
+    public BlockResponse updateBlock(Long blockId, BlockCommand request) {
         Block block = findBlockById(blockId);
 
         if (request instanceof BlockRequest.TextCommand textRequest && block instanceof TextBlock textBlock) {
@@ -63,18 +67,21 @@ public class BlockService {
         }
     }
 
-
     // 블럭 삭제 
     @Transactional
-    public void deleteBlock(Long blockId) {
+    public void deleteBlock(Long postId, Long blockId) {
+    	if (!postRepository.existsById(postId)) {
+    		throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
+    	}
+    	
         Block block = blockRepository.findById(blockId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
+                .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
 
-        Double deletedOrderIndex = block.getOrderIndex();
-        Long postId = block.getPost().getPostId();
+        // Double deletedOrderIndex = block.getOrderIndex();
+        // Long postId = block.getPost().getPostId();
 
         blockRepository.delete(block);
-        blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
+        // blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
     private Block findBlockById(Long blockId) {

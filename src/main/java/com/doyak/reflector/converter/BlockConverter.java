@@ -10,6 +10,7 @@ import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.BlockRequest;
+import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
@@ -18,7 +19,7 @@ import com.doyak.reflector.payload.exception.GeneralException;
 public class BlockConverter {
 
     // Request → Entity
-    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user) {
+    public Block toBlock(BlockCommand request, double orderIndex, Post post, User user) {
         if (request instanceof BlockRequest.TextCommand textReq) {
             return toTextEntity(textReq, orderIndex, post, user);
         } else if (request instanceof BlockRequest.CodeCommand codeReq) {
@@ -28,7 +29,7 @@ public class BlockConverter {
         }
     }
 
-    private TextBlock toTextEntity(BlockRequest.TextCommand request, int orderIndex, Post post, User user) {
+    private TextBlock toTextEntity(BlockRequest.TextCommand request, double orderIndex, Post post, User user) {
         return TextBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
@@ -37,7 +38,7 @@ public class BlockConverter {
                 .build();
     }
 
-    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user) {
+    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, double orderIndex, Post post, User user) {
         return CodeBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
