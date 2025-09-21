@@ -1,7 +1,5 @@
 package com.doyak.reflector.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -51,12 +49,6 @@ public class PostService {
     @Transactional
     public void deletePost(User user, Long postId) {
         postRepository.deleteById(postId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostResponse.PostOverview> getAllPostsByUser(User user) {
-        List<Post> posts = postRepository.findAllByUserOrderByCreatedAtDesc(user);
-        return postConverter.toResponseList(posts);
     }
 
     private Post findPostById(User user, Long postId) {

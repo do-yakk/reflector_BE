@@ -1,6 +1,5 @@
 package com.doyak.reflector.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,7 +14,6 @@ import com.doyak.reflector.domain.User;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findAllByUserOrderByCreatedAtDesc(User user);
 
     Page<Post> findAllByUser(User user, PageRequest pageRequest); 
     
