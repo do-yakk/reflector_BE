@@ -17,8 +17,7 @@ import com.doyak.reflector.domain.User;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByUserOrderByCreatedAtDesc(User user);
 
-	  Page<Post> findAllByUser(User user, PageRequest pageRequest); 
-    List<Post> findAllByUserOrderByCreatedAtDesc(User user); 
+    Page<Post> findAllByUser(User user, PageRequest pageRequest); 
     
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.blocks WHERE p.postId = :postId")
     Optional<Post> findByIdWithBlocks(@Param("postId") Long postId);
