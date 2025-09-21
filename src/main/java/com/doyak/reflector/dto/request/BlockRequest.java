@@ -1,5 +1,7 @@
 package com.doyak.reflector.dto.request;
 
+import java.util.Set;
+
 import com.doyak.reflector.domain.enums.Language;
 
 import lombok.Getter;
@@ -17,6 +19,7 @@ public interface BlockRequest {
 		private Language language;
 		private double performTime;
 		private double performMem;
+		private Set<String> hashtags;
 	}
 
 }

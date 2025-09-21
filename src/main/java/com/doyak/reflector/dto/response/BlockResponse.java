@@ -1,5 +1,8 @@
 package com.doyak.reflector.dto.response;
 
+import java.util.Set;
+
+import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.enums.Language;
 
 import lombok.AccessLevel;
@@ -27,6 +30,7 @@ public interface BlockResponse {
         private Language language;
         private double performTime;
         private double performMem;
+        private Set<Hashtag> hashtags;
     }
     
 }
