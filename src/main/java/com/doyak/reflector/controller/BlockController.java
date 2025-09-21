@@ -68,7 +68,8 @@ public class BlockController {
     
     @PatchMapping("/{blockId}")
     @Operation(summary = "블럭 순서 변경", description = "순서 변경을 원하는 블럭 정보와 원하는 위치 인덱스를 입력해주세요.")
-    public ApiResponse<Void> reorderBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, BlockRequest.ReorderBlock request) {
+    public ApiResponse<Void> reorderBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, 
+    									  @RequestBody BlockRequest.ReorderBlock request) {
         blockService.reorderBlock(postId, blockId, request);
         return ApiResponse.onSuccess(null);
     }
