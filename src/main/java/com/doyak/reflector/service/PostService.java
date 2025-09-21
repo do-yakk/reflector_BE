@@ -2,6 +2,7 @@ package com.doyak.reflector.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -67,9 +68,9 @@ public class PostService {
     }
     
     @Transactional(readOnly = true)
-    public List<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size) {
+    public Page<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size) {
     	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort.getField()));
-    	List<Post> posts = postRepository.findAllByUser(user, pageRequest);
-    	return postConverter.toResponseList(posts);
+    	Page<Post> posts = postRepository.findAllByUser(user, pageRequest);
+    	return postConverter.toResponsePage(posts);
     }
 }

@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.domain.Post;
@@ -43,12 +44,20 @@ public class PostConverter {
     // 리스트 
     public List<PostResponse.PostOverview> toResponseList(List<Post> posts) {    	
     	return posts.stream()
-    		.map(post -> PostResponse.PostOverview.builder()
-    				.postId(post.getPostId())
-    				.title(post.getTitle())
-    				.level(post.getLevel())
-    				.site(post.getSite())
-    				.build())
-        .collect(Collectors.toList());
+    		.map(this::toOverview)
+    		.collect(Collectors.toList());
+    }
+    
+    public Page<PostResponse.PostOverview> toResponsePage(Page<Post> posts) {
+    	return posts.map(this::toOverview);
+    }
+    
+    private PostResponse.PostOverview toOverview(Post post) {
+    	return PostResponse.PostOverview.builder()
+    			.postId(post.getPostId())
+				.title(post.getTitle())
+				.level(post.getLevel())
+				.site(post.getSite())
+				.build();
     }
 }

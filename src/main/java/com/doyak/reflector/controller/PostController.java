@@ -2,6 +2,7 @@ package com.doyak.reflector.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -74,7 +75,7 @@ public class PostController {
 	
 	@GetMapping("/sorted")
 	@Operation(summary = "포스트 정렬")
-	public ApiResponse<List<PostResponse.PostOverview>> getSortedPosts(@AuthenticationPrincipal User user,
+	public ApiResponse<Page<PostResponse.PostOverview>> getSortedPosts(@AuthenticationPrincipal User user,
 																 @RequestParam(name = "sort", defaultValue = "CREATED_AT")
 															 	 @Parameter(description = "정렬 기준 enum 입력 (CREATED_AT, UPDATED_AT)") SortType sort,
 																 @RequestParam(name = "direction", defaultValue = "DESC") 
@@ -83,7 +84,7 @@ public class PostController {
 																 @Parameter(description = "페이지 번호 입력") int page,
 														         @RequestParam(name = "size", defaultValue = "10") 
 																 @Parameter(description = "페이지 크기 입력") int size) {
-		List<PostResponse.PostOverview> response = postService.getSortedPosts(user, sort, direction, page, size);
+		Page<PostResponse.PostOverview> response = postService.getSortedPosts(user, sort, direction, page, size);
 		return ApiResponse.onSuccess(response);
 		
 	}
