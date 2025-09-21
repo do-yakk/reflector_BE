@@ -84,6 +84,13 @@ public class BlockService {
     public void deleteBlock(Long blockId) {
         Block block = blockRepository.findById(blockId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
+        
+        if (block instanceof CodeBlock codeBlock) {
+            for (Hashtag hashtag : codeBlock.getHashtags()) {
+                hashtag.getCodeBlocks().remove(codeBlock);
+            }
+            codeBlock.getHashtags().clear();
+        }
 
         int deletedOrderIndex = block.getOrderIndex();
         Long postId = block.getPost().getPostId();
