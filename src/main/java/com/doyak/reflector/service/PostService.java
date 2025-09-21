@@ -32,7 +32,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponse.PostInfo getPost(User user, Long postId) {
-        Post post = findPostById(user, postId);
+        Post post = findPostWithBlocks(user, postId);
         return postConverter.toResponse(post);
     }
 
@@ -57,6 +57,15 @@ public class PostService {
     private Post findPostById(User user, Long postId) {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+    	if (!post.getUser().getId().equals(user.getId())) {
+    		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
+    	}
+        return post;
+    }
+   
+    private Post findPostWithBlocks(User user, Long postId) {
+    	Post post = postRepository.findByIdWithBlocks(postId)
+    			.orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
     	if (!post.getUser().getId().equals(user.getId())) {
     		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
     	}

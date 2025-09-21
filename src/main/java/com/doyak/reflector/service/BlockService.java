@@ -45,13 +45,6 @@ public class BlockService {
         return blockConverter.toResponse(block);
     }
 
-    // 게시글에 속한 블럭 목록 조회 
-    @Transactional(readOnly = true)
-    public List<BlockResponse> getBlocksByPostId(Long postId) {
-        List<Block> blocks = blockRepository.findAllByPostIdOrderByOrderIndex(postId);
-        return blockConverter.toResponseList(blocks);
-    }
-    
     // 블럭 수정
     @Transactional
     public BlockResponse updateBlock(Long blockId, BlockRequest request) {
