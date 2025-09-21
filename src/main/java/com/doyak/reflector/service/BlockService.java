@@ -36,9 +36,9 @@ public class BlockService {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
     	
-    	int gap = 10;
+    	double gap = 10;
     	
-    	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + gap;
+    	double nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + gap;
     	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
@@ -77,11 +77,7 @@ public class BlockService {
         Block block = blockRepository.findById(blockId)
                 .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
 
-        // Double deletedOrderIndex = block.getOrderIndex();
-        // Long postId = block.getPost().getPostId();
-
         blockRepository.delete(block);
-        // blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
     private Block findBlockById(Long blockId) {
@@ -91,7 +87,7 @@ public class BlockService {
     }
     
     @Transactional
-    public void reorderBlocks(Long postId, Long blockId, int newIndex) {
+    public void reorderBlocks(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
     	Post post = postRepository.findById(postId)
     			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	
@@ -99,10 +95,29 @@ public class BlockService {
     	Block movingBlock = blockRepository.findById(blockId)
     						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
         
-    	double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
-    	double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	Integer newIndex = request.getNewIndex();
+    	Double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+    	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	
+    	if (next - prev <= 1) {
+    	    normalizeOrderIndexes(post);
+    	    blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+        	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	}
     	
         movingBlock.moveTo((prev + next) / 2);
+    }
+    
+    @Transactional
+    public void normalizeOrderIndexes(Post post) {
+        List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+        double index = 0;
+        double gap = 10;
+
+        for (Block block : blocks) {
+            block.moveTo(index);
+            index += gap;
+        }
     }
 }

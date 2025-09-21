@@ -36,8 +36,7 @@ public class BlockRequest {
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor
 	public static class ReorderBlock {
-		private Long blockId;
-		private Double newIndex;
+		private Integer newIndex;
 	}
 
 }

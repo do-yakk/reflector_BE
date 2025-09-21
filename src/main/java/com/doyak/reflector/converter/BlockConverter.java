@@ -19,7 +19,7 @@ import com.doyak.reflector.payload.exception.GeneralException;
 public class BlockConverter {
 
     // Request → Entity
-    public Block toBlock(BlockCommand request, double orderIndex, Post post, User user) {
+    public Block toBlock(BlockCommand request, Double orderIndex, Post post, User user) {
         if (request instanceof BlockRequest.TextCommand textReq) {
             return toTextEntity(textReq, orderIndex, post, user);
         } else if (request instanceof BlockRequest.CodeCommand codeReq) {
@@ -29,7 +29,7 @@ public class BlockConverter {
         }
     }
 
-    private TextBlock toTextEntity(BlockRequest.TextCommand request, double orderIndex, Post post, User user) {
+    private TextBlock toTextEntity(BlockRequest.TextCommand request, Double orderIndex, Post post, User user) {
         return TextBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
@@ -38,7 +38,7 @@ public class BlockConverter {
                 .build();
     }
 
-    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, double orderIndex, Post post, User user) {
+    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, Double orderIndex, Post post, User user) {
         return CodeBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
