@@ -16,6 +16,7 @@ import com.doyak.reflector.dto.request.PostRequest;
 import com.doyak.reflector.dto.response.PostResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
+import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,15 @@ public class PostService {
     public Page<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size) {
     	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort.getField()));
     	Page<Post> posts = postRepository.findAllByUser(user, pageRequest);
+    	
+    	if (posts.isEmpty()) {
+    		throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
+    	}
+    	
+    	if (page >= posts.getTotalPages() && posts.getTotalPages() > 0) {
+            throw new PostHandler(ErrorStatus.PAGE_OUT_OF_RANGE);
+        }
+    	
     	return postConverter.toResponsePage(posts);
     }
 }
