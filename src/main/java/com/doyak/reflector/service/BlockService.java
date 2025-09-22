@@ -38,7 +38,7 @@ public class BlockService {
     	
     	double gap = 10;
     	
-    	double nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + gap;
+    	double nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(10) + gap;
     	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
@@ -100,22 +100,23 @@ public class BlockService {
     	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	
     	if (next - prev <= 1) {
-    	    normalizeOrderIndexes(post);
+    	    normalizeOrderIndexes(post, movingBlock);
     	    blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
     	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
         	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	}
-    	
-        movingBlock.moveTo((prev + next) / 2);
+
+    	movingBlock.moveTo((prev + next) / 2);
     }
     
     @Transactional
-    private void normalizeOrderIndexes(Post post) {
+    private void normalizeOrderIndexes(Post post, Block movingBlock) {
         List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
-        double index = 0;
+        double index = 10;
         double gap = 10;
 
         for (Block block : blocks) {
+        	if (block.equals(movingBlock)) continue;
             block.moveTo(index);
             index += gap;
         }
