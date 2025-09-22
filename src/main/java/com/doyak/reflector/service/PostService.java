@@ -1,5 +1,8 @@
 package com.doyak.reflector.service;
 
+import java.awt.print.Pageable;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,6 +18,7 @@ import com.doyak.reflector.dto.response.PostResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
 import com.doyak.reflector.payload.exception.handler.PostHandler;
+import com.doyak.reflector.repository.HashtagRepository;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostService {
     
+	private final HashtagRepository hashtagRepository;
     private final PostRepository postRepository;
     private final PostConverter postConverter;
 
@@ -61,9 +66,14 @@ public class PostService {
     }
     
     @Transactional(readOnly = true)
-    public Page<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size) {
+    public Page<PostResponse.PostOverview> getSortedPosts(User user, SortType sort, Sort.Direction direction, int page, int size, String hash) {
     	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort.getField()));
-    	Page<Post> posts = postRepository.findAllByUser(user, pageRequest);
+    	Page<Post> posts;
+    	if (hash == null) {
+    		posts = postRepository.findAllByUser(user, pageRequest);
+    	} else {
+    		posts = postRepository.findByUserAndHashtag(user, hash, pageRequest);
+    	}
     	
     	if (posts.isEmpty()) {
     		throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
@@ -74,6 +84,10 @@ public class PostService {
         }
     	
     	return postConverter.toResponsePage(posts);
+    }
+    
+    public List<String> getAllHashtags(User user) {
+    	return hashtagRepository.findAllHashStringsByUserId(user);
     }
    
     private Post findPostWithBlocks(User user, Long postId) {
