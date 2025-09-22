@@ -1,7 +1,5 @@
 package com.doyak.reflector.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +19,8 @@ import com.doyak.reflector.repository.BlockRepository;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

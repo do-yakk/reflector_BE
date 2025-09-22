@@ -1,7 +1,5 @@
 package com.doyak.reflector.controller;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +17,8 @@ import com.doyak.reflector.service.BlockService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/blocks/{postId}")
