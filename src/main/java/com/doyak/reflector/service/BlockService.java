@@ -2,6 +2,7 @@ package com.doyak.reflector.service;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,7 +100,7 @@ public class BlockService {
         blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
-    private Set<Hashtag> getHashtags(Set<String> tagNames) {
+    private Set<Hashtag> getHashtags(List<String> tagNames) {
         // 이미 존재하는 해시태그 
         Set<Hashtag> existing = hashtagRepository.findByHashIn(tagNames);
         Set<String> existingNames = existing.stream()

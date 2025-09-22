@@ -23,5 +23,5 @@ public interface HashtagRepository extends JpaRepository<Hashtag, Long> {
 			"WHERE p.user = :user")
 	List<String> findAllHashStringsByUserId(@Param("user") User user);
 
-	Set<Hashtag> findByHashIn(Set<String> tagNames);
+	Set<Hashtag> findByHashIn(List<String> tagNames);
 }

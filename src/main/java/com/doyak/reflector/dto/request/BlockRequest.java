@@ -1,6 +1,6 @@
 package com.doyak.reflector.dto.request;
 
-import java.util.Set;
+import java.util.List;
 
 import com.doyak.reflector.domain.enums.Language;
 
@@ -19,7 +19,7 @@ public interface BlockRequest {
 		private Language language;
 		private double performTime;
 		private double performMem;
-		private Set<String> hashtags;
+		private List<String> hashtags;
 	}
 
 }
