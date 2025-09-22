@@ -87,36 +87,39 @@ public class BlockService {
     }
     
     @Transactional
-    public void reorderBlock(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
+    public List<BlockResponse> reorderBlock(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
     	Post post = postRepository.findById(postId)
     			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	
     	List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
     	Block movingBlock = blockRepository.findById(blockId)
     						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+    	
+    	blocks.remove(movingBlock);
         
     	Integer newIndex = request.getNewIndex();
     	Double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
     	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	
     	if (next - prev <= 1) {
-    	    normalizeOrderIndexes(post, movingBlock);
+    	    normalizeOrderIndexes(blocks);
     	    blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    	    blocks.remove(movingBlock);
     	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
         	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	}
 
     	movingBlock.moveTo((prev + next) / 2);
+    	blocks.add(newIndex, movingBlock);
+    	return blockConverter.toResponseList(blocks);
     }
     
     @Transactional
-    private void normalizeOrderIndexes(Post post, Block movingBlock) {
-        List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    private void normalizeOrderIndexes(List<Block> blocks) {
         double index = 10;
         double gap = 10;
 
         for (Block block : blocks) {
-        	if (block.equals(movingBlock)) continue;
             block.moveTo(index);
             index += gap;
         }
