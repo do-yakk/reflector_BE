@@ -2,7 +2,6 @@ package com.doyak.reflector.converter;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -71,12 +70,13 @@ public class BlockConverter {
     }
 
     private BlockResponse.Code toCodeResponse(CodeBlock block) {
+    	List<String> hashtags = block.getHashtags().stream().map(Hashtag::getHash).toList();
         return BlockResponse.Code.builder()
                 .content(block.getContent())
                 .language(block.getLanguage())
                 .performTime(block.getPerformTime())
                 .performMem(block.getPerformMem())
-                .hashtags(block.getHashtags())
+                .hashtags(hashtags)
                 .build();
     }
     

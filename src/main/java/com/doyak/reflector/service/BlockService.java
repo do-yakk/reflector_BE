@@ -1,6 +1,7 @@
 package com.doyak.reflector.service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -98,12 +99,24 @@ public class BlockService {
         blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
-    private Set<Hashtag> getHashtags (Set<String> tags) {
-    	Set<Hashtag> hashtags = tags.stream()
-        	    .map(tag -> hashtagRepository.findByHash(tag)
-        	            .orElseGet(() -> hashtagRepository.save(Hashtag.builder().hash(tag).build())))
-        	    .collect(Collectors.toSet());
-    	return hashtags;
+    private Set<Hashtag> getHashtags(Set<String> tagNames) {
+        // 이미 존재하는 해시태그 
+        Set<Hashtag> existing = hashtagRepository.findByHashIn(tagNames);
+        Set<String> existingNames = existing.stream()
+            .map(Hashtag::getHash)
+            .collect(Collectors.toSet());
+        // 새로 만들 해시태그 
+        Set<Hashtag> newTags = tagNames.stream()
+            .filter(name -> !existingNames.contains(name))
+            .map(name -> Hashtag.builder().hash(name).build())
+            .map(hashtagRepository::save)
+            .collect(Collectors.toSet());
+
+        // 기존 + 새 태그 합치기
+        Set<Hashtag> allTags = new HashSet<>(existing);
+        allTags.addAll(newTags);
+
+        return allTags;
     }
     
     private Block findBlockById(Long blockId) {
