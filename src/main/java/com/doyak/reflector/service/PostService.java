@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.doyak.reflector.converter.PostConverter;
+import com.doyak.reflector.domain.Block;
+import com.doyak.reflector.domain.CodeBlock;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.domain.enums.SortType;
@@ -27,9 +29,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostService {
     
-	private final HashtagRepository hashtagRepository;
     private final PostRepository postRepository;
     private final PostConverter postConverter;
+	private final HashtagRepository hashtagRepository;
+	private final BlockService blockService;
 
     @Transactional
     public PostResponse.PostInfo createPost(User user, PostRequest.PostCommand command) {
@@ -53,6 +56,10 @@ public class PostService {
 
     @Transactional
     public void deletePost(User user, Long postId) {
+    	Post post = findPostById(user, postId);
+    	for (Block block : post.getBlocks()) {
+    		blockService.deleteBlock(block.getBlockId());
+    	}
         postRepository.deleteById(postId);
     }
 
