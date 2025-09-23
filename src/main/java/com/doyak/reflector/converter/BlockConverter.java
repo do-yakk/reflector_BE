@@ -1,7 +1,7 @@
 package com.doyak.reflector.converter;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -20,11 +20,11 @@ import com.doyak.reflector.payload.exception.GeneralException;
 public class BlockConverter {
 
     // Request → Entity
-    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user, Set<Hashtag> hashtags) {
+    public Block toBlock(BlockRequest request, int orderIndex, Post post, User user) {
         if (request instanceof BlockRequest.TextCommand textReq) {
             return toTextEntity(textReq, orderIndex, post, user);
         } else if (request instanceof BlockRequest.CodeCommand codeReq) {
-            return toCodeEntity(codeReq, orderIndex, post, user, hashtags);
+            return toCodeEntity(codeReq, orderIndex, post, user);
         } else {
             throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
         }
@@ -39,7 +39,7 @@ public class BlockConverter {
                 .build();
     }
 
-    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user, Set<Hashtag> hashtags) {    	
+    private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, int orderIndex, Post post, User user) {    	
     	return CodeBlock.builder()
         		.orderIndex(orderIndex)
         		.post(post)
@@ -48,7 +48,7 @@ public class BlockConverter {
                 .language(request.getLanguage())
                 .performTime(request.getPerformTime())
                 .performMem(request.getPerformMem())
-                .hashtags(hashtags)
+                .hashtags(new HashSet<>())
                 .build();
     }
 

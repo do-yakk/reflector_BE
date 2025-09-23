@@ -1,6 +1,5 @@
 package com.doyak.reflector.service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +40,12 @@ public class BlockService {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
     	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + 1;
-        Set<Hashtag> hashtags = Collections.emptySet();
-    	if (request instanceof BlockRequest.CodeCommand codeRequest) {
-            hashtags = getHashtags(codeRequest.getHashtags()); 
-    	}
-    	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser(), hashtags);
+    	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
+    	if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
+            Set<Hashtag> hashtags = getHashtags(codeRequest.getHashtags());
+            hashtags.forEach(codeBlock::addHashtag);
+        }
+    	post.getBlocks().add(block);
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
     }
@@ -66,13 +66,12 @@ public class BlockService {
             textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
         } else if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
-        	Set<Hashtag> hashtags = getHashtags(codeRequest.getHashtags());
-        	codeBlock.getHashtags().clear();
-        	codeBlock.getHashtags().addAll(hashtags);
+        	Set<Hashtag> newHashtags = getHashtags(codeRequest.getHashtags());
+            codeBlock.getHashtags().removeIf(tag -> !newHashtags.contains(tag));
+            newHashtags.forEach(tag -> codeBlock.getHashtags().add(tag));
         	
         	codeBlock.update(codeRequest.getContent(),codeRequest.getLanguage(), 
-        			codeRequest.getPerformTime(), codeRequest.getPerformMem(), codeBlock.getHashtags()
-        	);
+        			codeRequest.getPerformTime(), codeRequest.getPerformMem());
             return blockConverter.toResponse(codeBlock);
         } else {
         	throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
@@ -87,9 +86,7 @@ public class BlockService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
         
         if (block instanceof CodeBlock codeBlock) {
-            for (Hashtag hashtag : codeBlock.getHashtags()) {
-                hashtag.getCodeBlocks().remove(codeBlock);
-            }
+            codeBlock.getHashtags().forEach(h -> h.getCodeBlocks().remove(codeBlock));
             codeBlock.getHashtags().clear();
         }
 
@@ -107,11 +104,11 @@ public class BlockService {
             .map(Hashtag::getHash)
             .collect(Collectors.toSet());
         // 새로 만들 해시태그 
-        Set<Hashtag> newTags = tagNames.stream()
-            .filter(name -> !existingNames.contains(name))
-            .map(name -> Hashtag.builder().hash(name).build())
-            .map(hashtagRepository::save)
-            .collect(Collectors.toSet());
+        List<Hashtag> newTags = tagNames.stream()
+        	    .filter(name -> !existingNames.contains(name))
+        	    .map(name -> Hashtag.builder().hash(name).build())
+        	    .collect(Collectors.toList());
+    	hashtagRepository.saveAll(newTags);
 
         // 기존 + 새 태그 합치기
         Set<Hashtag> allTags = new HashSet<>(existing);

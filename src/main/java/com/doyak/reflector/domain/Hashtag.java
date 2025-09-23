@@ -30,5 +30,6 @@ public class Hashtag {
 	private String hash;
 	
 	@ManyToMany(mappedBy = "hashtags")
+	@Builder.Default
 	private Set<CodeBlock> codeBlocks = new HashSet<>();
 }

@@ -44,11 +44,21 @@ public class CodeBlock extends Block {
 	private Set<Hashtag> hashtags = new HashSet<>();
 	
 	// 업데이트 
-	public void update(String content, Language language, double performTime, double performMem, Set<Hashtag> hashtags) {
+	public void update(String content, Language language, double performTime, double performMem) {
 	    this.content = content;
 	    this.language = language;
 	    this.performTime = performTime;
 	    this.performMem = performMem;
-	    this.hashtags = hashtags;
+	}
+	
+	// 해시태그 추가/삭제
+	public void addHashtag(Hashtag hashtag) {
+		this.hashtags.add(hashtag);
+		hashtag.getCodeBlocks().add(this);
+	}
+	
+	public void removeHasghtag(Hashtag hashtag) {
+		this.hashtags.remove(hashtag);
+		hashtag.getCodeBlocks().remove(this);
 	}
 }
