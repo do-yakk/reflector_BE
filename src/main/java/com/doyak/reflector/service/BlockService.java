@@ -104,7 +104,7 @@ public class BlockService {
             .map(Hashtag::getHash)
             .collect(Collectors.toSet());
         // 새로 만들 해시태그 
-        List<Hashtag> newTags = tagNames.stream()
+        List<Hashtag> newTags = tagNames.stream().distinct()
         	    .filter(name -> !existingNames.contains(name))
         	    .map(name -> Hashtag.builder().hash(name).build())
         	    .collect(Collectors.toList());
