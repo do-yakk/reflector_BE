@@ -15,14 +15,20 @@ import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.dto.request.BlockRequest;
+import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
 import com.doyak.reflector.payload.exception.GeneralException;
+import com.doyak.reflector.payload.exception.handler.BlockHandler;
+import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.BlockRepository;
 import com.doyak.reflector.repository.HashtagRepository;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +42,13 @@ public class BlockService {
 
     // 블럭 생성  
     @Transactional
-    public BlockResponse createBlock(BlockRequest request, Long postId) {
+    public BlockResponse createBlock(BlockCommand request, Long postId) {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
-    	int nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(0) + 1;
+    	
+    	double gap = 10;
+    	
+    	double nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(10) + gap;
     	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
     	if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
             Set<Hashtag> hashtags = getHashtags(codeRequest.getHashtags());
@@ -59,7 +68,7 @@ public class BlockService {
 
     // 블럭 수정
     @Transactional
-    public BlockResponse updateBlock(Long blockId, BlockRequest request) {
+    public BlockResponse updateBlock(Long blockId, BlockCommand request) {
         Block block = findBlockById(blockId);
 
         if (request instanceof BlockRequest.TextCommand textRequest && block instanceof TextBlock textBlock) {
@@ -78,10 +87,13 @@ public class BlockService {
         }
     }
 
-
     // 블럭 삭제 
     @Transactional
-    public void deleteBlock(Long blockId) {
+    public void deleteBlock(Long postId, Long blockId) {
+    	if (!postRepository.existsById(postId)) {
+    		throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
+    	}
+    	
         Block block = blockRepository.findById(blockId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
         
@@ -94,7 +106,6 @@ public class BlockService {
         Long postId = block.getPost().getPostId();
 
         blockRepository.delete(block);
-        blockRepository.decrementOrderIndexAfter(postId, deletedOrderIndex);
     }
     
     private Set<Hashtag> getHashtags(List<String> tagNames) {
@@ -121,5 +132,43 @@ public class BlockService {
     	Block block = blockRepository.findById(blockId)
     		    .orElseThrow(() -> new GeneralException(ErrorStatus.BLOCK_NOT_FOUND));
     	return block;
+    }
+    
+    @Transactional
+    public List<BlockResponse> reorderBlock(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
+    	Post post = postRepository.findById(postId)
+    			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
+    	
+    	List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    	Block movingBlock = blockRepository.findById(blockId)
+    						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+    	
+    	blocks.remove(movingBlock);
+        
+    	Integer newIndex = request.getNewIndex();
+    	Double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+    	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	
+    	if (next - prev <= 1) {
+    	    normalizeOrderIndexes(blocks);
+    	    blocks.sort(Comparator.comparing(Block::getOrderIndex));    	    
+    	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+        	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	}
+
+    	movingBlock.moveTo((prev + next) / 2);
+    	blocks.add(newIndex, movingBlock);
+    	return blockConverter.toResponseList(blocks);
+    }
+    
+    @Transactional
+    private void normalizeOrderIndexes(List<Block> blocks) {
+        double index = 10;
+        double gap = 10;
+
+        for (Block block : blocks) {
+            block.moveTo(index);
+            index += gap;
+        }
     }
 }
