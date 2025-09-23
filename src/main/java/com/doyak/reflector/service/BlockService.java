@@ -20,6 +20,7 @@ import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -103,8 +104,7 @@ public class BlockService {
     	
     	if (next - prev <= 1) {
     	    normalizeOrderIndexes(blocks);
-    	    blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
-    	    blocks.remove(movingBlock);
+    	    blocks.sort(Comparator.comparing(Block::getOrderIndex));    	    
     	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
         	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
     	}
