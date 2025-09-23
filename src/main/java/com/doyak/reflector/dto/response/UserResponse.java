@@ -24,5 +24,5 @@ public class UserResponse {
     public static class UserUpdateDTO {
 		String email;
 	}
-
+	
 }

@@ -1,11 +1,16 @@
 package com.doyak.reflector.controller;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.doyak.reflector.domain.User;
@@ -76,6 +81,13 @@ public class UserController {
 	public ApiResponse<Void> verifyCode(@Valid @RequestBody UserRequest.EmailCodeDTO request) {
 		emailService.verifyEmailCode(request);
 		return ApiResponse.onSuccess(null);
+	}
+	
+	@GetMapping("/study-tracker/{year}")
+	@Operation(summary = "학습 트래커 로그 불러오기", description = "원하는 연도를 입력해주세요.")
+	public ApiResponse<Map<LocalDate, Long>> getStudyLogs(@AuthenticationPrincipal User user, @RequestParam(name = "year", defaultValue = "2025") Integer year) {
+		Map<LocalDate, Long> response = userService.getCalendarDate(user, year);
+		return ApiResponse.onSuccess(response);
 	}
 	
 }

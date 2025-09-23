@@ -1,5 +1,7 @@
 package com.doyak.reflector.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,4 +21,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.blocks WHERE p.postId = :postId")
     Optional<Post> findByIdWithBlocks(@Param("postId") Long postId);
+    
+    List<Post> findAllByUserAndCreatedAtBetween(User user, LocalDateTime from, LocalDateTime to);
 }

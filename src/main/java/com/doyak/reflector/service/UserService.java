@@ -1,13 +1,23 @@
 package com.doyak.reflector.service;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.doyak.reflector.auth.JwtUtil;
 import com.doyak.reflector.converter.UserConverter;
+import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
+import com.doyak.reflector.repository.PostRepository;
 import com.doyak.reflector.repository.UserRepository;
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
@@ -23,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 	
 	private final UserRepository userRepository;
+	private final PostRepository postRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     
@@ -80,5 +91,34 @@ public class UserService {
     	
     	userRepository.delete(findUser);
     	log.info("Successfully delete user");
+    }
+    
+    @Transactional(readOnly = true)
+    public Map<LocalDate, Long> getCalendarDate(User user, Integer year) {
+    	User findUser = userRepository.findByEmail(user.getEmail())
+				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+    	
+    	
+    	LocalDate startDate = LocalDate.of(year,  1,  1);
+    	LocalDate endDate = LocalDate.of(year, 12, 31);
+
+    	LocalDateTime start = startDate.atStartOfDay();
+    	LocalDateTime end = endDate.atTime(LocalTime.MAX);  
+    	
+    	List<Post> posts = postRepository.findAllByUserAndCreatedAtBetween(findUser, start, end);
+    	Map<LocalDate, Long> calendarMap = posts.stream()
+    			.collect(Collectors.groupingBy(
+    					post -> post.getCreatedAt().toLocalDate(),
+    	                Collectors.counting()
+    					));
+    	
+//    	Map<LocalDate, Long> result = new LinkedHashMap<>();
+//        LocalDate cursor = startDate;
+//        while (!cursor.isAfter(endDate)) {
+//            result.put(cursor, calendarMap.getOrDefault(cursor, (long) 0));
+//            cursor = cursor.plusDays(1);
+//        }
+
+        return calendarMap;
     }
 }
