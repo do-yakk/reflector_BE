@@ -102,8 +102,7 @@ public class BlockService {
             codeBlock.getHashtags().clear();
         }
 
-        int deletedOrderIndex = block.getOrderIndex();
-        Long postId = block.getPost().getPostId();
+        Double deletedOrderIndex = block.getOrderIndex();
 
         blockRepository.delete(block);
     }

@@ -58,7 +58,7 @@ public class PostService {
     public void deletePost(User user, Long postId) {
     	Post post = findPostById(user, postId);
     	for (Block block : post.getBlocks()) {
-    		blockService.deleteBlock(block.getBlockId());
+    		blockService.deleteBlock(post.getPostId(), block.getBlockId());
     	}
         postRepository.deleteById(postId);
     }
