@@ -4,7 +4,6 @@ package com.doyak.reflector.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -94,7 +93,7 @@ public class UserService {
     }
     
     @Transactional(readOnly = true)
-    public Map<LocalDate, Long> getCalendarDate(User user, Integer year) {
+    public List<UserResponse.UserTrackerDTO> getCalendarDate(User user, Integer year) {
     	User findUser = userRepository.findByEmail(user.getEmail())
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     	
@@ -106,19 +105,21 @@ public class UserService {
     	LocalDateTime end = endDate.atTime(LocalTime.MAX);  
     	
     	List<Post> posts = postRepository.findAllByUserAndCreatedAtBetween(findUser, start, end);
-    	Map<LocalDate, Long> calendarMap = posts.stream()
+    	Map<LocalDate, Long> logs = posts.stream()
     			.collect(Collectors.groupingBy(
     					post -> post.getCreatedAt().toLocalDate(),
     	                Collectors.counting()
     					));
     	
-//    	Map<LocalDate, Long> result = new LinkedHashMap<>();
-//        LocalDate cursor = startDate;
-//        while (!cursor.isAfter(endDate)) {
-//            result.put(cursor, calendarMap.getOrDefault(cursor, (long) 0));
-//            cursor = cursor.plusDays(1);
-//        }
+    	/* 전체 날짜 불러오기 (학습 기록이 없는 날은 0)
+    	Map<LocalDate, Long> result = new LinkedHashMap<>();
+        LocalDate cursor = startDate;
+        while (!cursor.isAfter(endDate)) {
+            result.put(cursor, calendarMap.getOrDefault(cursor, (long) 0));
+            cursor = cursor.plusDays(1);
+        }
+        */
 
-        return calendarMap;
+        return UserConverter.toTrackerResponse(logs);
     }
 }

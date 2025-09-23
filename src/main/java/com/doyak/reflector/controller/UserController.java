@@ -1,6 +1,7 @@
 package com.doyak.reflector.controller;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -85,8 +86,8 @@ public class UserController {
 	
 	@GetMapping("/study-tracker/{year}")
 	@Operation(summary = "학습 트래커 로그 불러오기", description = "원하는 연도를 입력해주세요.")
-	public ApiResponse<Map<LocalDate, Long>> getStudyLogs(@AuthenticationPrincipal User user, @RequestParam(name = "year", defaultValue = "2025") Integer year) {
-		Map<LocalDate, Long> response = userService.getCalendarDate(user, year);
+	public ApiResponse<List<UserResponse.UserTrackerDTO>> getTrackers(@AuthenticationPrincipal User user, @RequestParam(name = "year", defaultValue = "2025") Integer year) {
+		List<UserResponse.UserTrackerDTO> response = userService.getCalendarDate(user, year);
 		return ApiResponse.onSuccess(response);
 	}
 	
