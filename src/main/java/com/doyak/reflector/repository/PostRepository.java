@@ -22,5 +22,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.blocks WHERE p.postId = :postId")
     Optional<Post> findByIdWithBlocks(@Param("postId") Long postId);
     
-    List<Post> findAllByUserAndCreatedAtBetween(User user, LocalDateTime from, LocalDateTime to);
+    @Query("SELECT FUNCTION('DATE', p.createdAt) as date, COUNT(p) as count " +
+    		"FROM Post p WHERE p.user = :user AND p.createdAt BETWEEN :from AND :to " +
+    		"GROUP BY FUNCTION('DATE', p.createdAt) " +
+    		"ORDER BY date")
+    List<Object[]> countPostGroupedByDate(
+    		@Param("user") User user, 
+    		@Param("from") LocalDateTime from, 
+    		@Param("to") LocalDateTime to);
 }

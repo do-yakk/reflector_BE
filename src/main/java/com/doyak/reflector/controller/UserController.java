@@ -1,17 +1,15 @@
 package com.doyak.reflector.controller;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.doyak.reflector.domain.User;
@@ -86,7 +84,8 @@ public class UserController {
 	
 	@GetMapping("/study-tracker/{year}")
 	@Operation(summary = "학습 트래커 로그 불러오기", description = "원하는 연도를 입력해주세요.")
-	public ApiResponse<List<UserResponse.UserTrackerDTO>> getTrackers(@AuthenticationPrincipal User user, @RequestParam(name = "year", defaultValue = "2025") Integer year) {
+	public ApiResponse<List<UserResponse.UserTrackerDTO>> getTrackers(@AuthenticationPrincipal User user, 
+																	  @PathVariable("year") Integer year) {
 		List<UserResponse.UserTrackerDTO> response = userService.getCalendarDate(user, year);
 		return ApiResponse.onSuccess(response);
 	}

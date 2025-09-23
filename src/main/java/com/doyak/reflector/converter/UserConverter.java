@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.response.UserResponse;
+import com.doyak.reflector.dto.response.UserResponse.UserTrackerDTO;
 import com.doyak.reflector.dto.request.UserRequest;
 
 public class UserConverter {
@@ -31,14 +33,13 @@ public class UserConverter {
 				.build();
 	}
 	
-	public static List<UserResponse.UserTrackerDTO> toTrackerResponse(Map<LocalDate, Long> logs) {
-		return logs.entrySet().stream()
-		        .map(entry -> UserResponse.UserTrackerDTO.builder()
-		                .date(entry.getKey())
-		                .count(entry.getValue())
-		                .build())
-		        .sorted(Comparator.comparing(UserResponse.UserTrackerDTO::getDate))
-		        .toList();
+	public static List<UserResponse.UserTrackerDTO> toTrackerResponse(List<Object[]> queryResult) {
+		return queryResult.stream()
+    			.map(o -> UserTrackerDTO.builder()
+    	                .date(((java.sql.Date) o[0]).toLocalDate())
+    	                .count(((Long) o[1]))                       
+    	                .build()                       
+    	        ).collect(Collectors.toList());
 	}
 	
 }

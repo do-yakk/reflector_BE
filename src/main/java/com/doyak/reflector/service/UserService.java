@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.doyak.reflector.auth.JwtUtil;
 import com.doyak.reflector.converter.UserConverter;
-import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.repository.PostRepository;
 import com.doyak.reflector.repository.UserRepository;
@@ -105,27 +102,25 @@ public class UserService {
     	LocalDateTime start = startDate.atStartOfDay();
     	LocalDateTime end = endDate.atTime(LocalTime.MAX);  
     	
-    	List<Post> posts = postRepository.findAllByUserAndCreatedAtBetween(findUser, start, end);
+    	List<Object[]> queryResult = postRepository.countPostGroupedByDate(findUser, start, end);
     	
-    	if (posts.isEmpty()) {
+    	if (queryResult.isEmpty()) {
     	    throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
     	}
     	
-    	Map<LocalDate, Long> logs = posts.stream()
-    			.collect(Collectors.groupingBy(
-    					post -> post.getCreatedAt().toLocalDate(),
-    	                Collectors.counting()
-    					));
     	
     	/* 전체 날짜 불러오기 (학습 기록이 없는 날은 0)
-    	Map<LocalDate, Long> result = new LinkedHashMap<>();
-        LocalDate cursor = startDate;
-        while (!cursor.isAfter(endDate)) {
-            result.put(cursor, calendarMap.getOrDefault(cursor, (long) 0));
-            cursor = cursor.plusDays(1);
-        }
+        Map<LocalDate, Long> calendarMap = logs.stream()
+   			.collect(Collectors.toMap(UserTrackerDTO::getDate, UserTrackerDTO::getCount));
+
+		Map<LocalDate, Long> result = new LinkedHashMap<>();
+		LocalDate cursor = startDate;
+		while (!cursor.isAfter(endDate)) {
+		    result.put(cursor, calendarMap.getOrDefault(cursor, 0L));
+		    cursor = cursor.plusDays(1);
+		}
         */
 
-        return UserConverter.toTrackerResponse(logs);
+        return UserConverter.toTrackerResponse(queryResult);
     }
 }
