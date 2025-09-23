@@ -21,6 +21,7 @@ import com.doyak.reflector.repository.UserRepository;
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
+import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.payload.exception.handler.UserHandler;
 
 import lombok.RequiredArgsConstructor;
@@ -105,6 +106,11 @@ public class UserService {
     	LocalDateTime end = endDate.atTime(LocalTime.MAX);  
     	
     	List<Post> posts = postRepository.findAllByUserAndCreatedAtBetween(findUser, start, end);
+    	
+    	if (posts.isEmpty()) {
+    	    throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
+    	}
+    	
     	Map<LocalDate, Long> logs = posts.stream()
     			.collect(Collectors.groupingBy(
     					post -> post.getCreatedAt().toLocalDate(),
