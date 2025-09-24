@@ -64,6 +64,13 @@ public class PostController {
 		return ApiResponse.onSuccess(null);
 	}
 	
+	@GetMapping("/hashtags")
+	@Operation(summary = "해시태그 목록 조회")
+	public ApiResponse<List<String>> getAllHashtags(@AuthenticationPrincipal User user) {
+		List<String> hashtags = postService.getAllHashtags(user);
+		return ApiResponse.onSuccess(hashtags);
+	}
+	
 	@GetMapping("/sorted")
 	@Operation(summary = "포스트 정렬")
 	public ApiResponse<Page<PostResponse.PostOverview>> getSortedPosts(@AuthenticationPrincipal User user,
@@ -74,8 +81,10 @@ public class PostController {
 														         @RequestParam(name = "page", defaultValue = "0") 
 																 @Parameter(description = "페이지 번호 입력") int page,
 														         @RequestParam(name = "size", defaultValue = "10") 
-																 @Parameter(description = "페이지 크기 입력") int size) {
-		Page<PostResponse.PostOverview> response = postService.getSortedPosts(user, sort, direction, page, size);
+																 @Parameter(description = "페이지 크기 입력") int size,
+																 @RequestParam(name = "hashtag", required = false)
+																 @Parameter(description = "해시태그 입력") String hashtag) {
+		Page<PostResponse.PostOverview> response = postService.getSortedPosts(user, sort, direction, page, size, hashtag);
 		return ApiResponse.onSuccess(response);
 		
 	}
