@@ -1,11 +1,17 @@
 package com.doyak.reflector.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.doyak.reflector.converter.BlockConverter;
 import com.doyak.reflector.domain.Block;
 import com.doyak.reflector.domain.CodeBlock;
+import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.dto.request.BlockRequest;
@@ -16,6 +22,7 @@ import com.doyak.reflector.payload.exception.GeneralException;
 import com.doyak.reflector.payload.exception.handler.BlockHandler;
 import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.BlockRepository;
+import com.doyak.reflector.repository.HashtagRepository;
 import com.doyak.reflector.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,8 +37,10 @@ public class BlockService {
 	private final PostRepository postRepository;
     private final BlockRepository blockRepository;
     private final BlockConverter blockConverter; 
+    
+    private final HashtagRepository hashtagRepository;
 
-    // 코드 블럭 생성  
+    // 블럭 생성  
     @Transactional
     public BlockResponse createBlock(BlockCommand request, Long postId) {
     	Post post = postRepository.findById(postId)
@@ -41,6 +50,11 @@ public class BlockService {
     	
     	double nextOrderIndex = blockRepository.findMaxOrderIndexByPost(post).orElse(10) + gap;
     	Block block = blockConverter.toBlock(request, nextOrderIndex, post, post.getUser());
+    	if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
+            Set<Hashtag> hashtags = getHashtags(codeRequest.getHashtags());
+            hashtags.forEach(codeBlock::addHashtag);
+        }
+    	post.getBlocks().add(block);
     	Block saved = blockRepository.save(block);
     	return blockConverter.toResponse(saved);
     }
@@ -61,7 +75,12 @@ public class BlockService {
             textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
         } else if (request instanceof BlockRequest.CodeCommand codeRequest && block instanceof CodeBlock codeBlock) {
-        	codeBlock.update(codeRequest.getContent(), codeRequest.getLanguage(), codeRequest.getPerformTime(), codeRequest.getPerformMem());
+        	Set<Hashtag> newHashtags = getHashtags(codeRequest.getHashtags());
+            codeBlock.getHashtags().removeIf(tag -> !newHashtags.contains(tag));
+            newHashtags.forEach(tag -> codeBlock.getHashtags().add(tag));
+        	
+        	codeBlock.update(codeRequest.getContent(),codeRequest.getLanguage(), 
+        			codeRequest.getPerformTime(), codeRequest.getPerformMem());
             return blockConverter.toResponse(codeBlock);
         } else {
         	throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
@@ -76,9 +95,36 @@ public class BlockService {
     	}
     	
         Block block = blockRepository.findById(blockId)
-                .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
+        
+        if (block instanceof CodeBlock codeBlock) {
+            codeBlock.getHashtags().forEach(h -> h.getCodeBlocks().remove(codeBlock));
+            codeBlock.getHashtags().clear();
+        }
+
+        Double deletedOrderIndex = block.getOrderIndex();
 
         blockRepository.delete(block);
+    }
+    
+    private Set<Hashtag> getHashtags(List<String> tagNames) {
+        // 이미 존재하는 해시태그 
+        Set<Hashtag> existing = hashtagRepository.findByHashIn(tagNames);
+        Set<String> existingNames = existing.stream()
+            .map(Hashtag::getHash)
+            .collect(Collectors.toSet());
+        // 새로 만들 해시태그 
+        List<Hashtag> newTags = tagNames.stream().distinct()
+        	    .filter(name -> !existingNames.contains(name))
+        	    .map(name -> Hashtag.builder().hash(name).build())
+        	    .collect(Collectors.toList());
+    	hashtagRepository.saveAll(newTags);
+
+        // 기존 + 새 태그 합치기
+        Set<Hashtag> allTags = new HashSet<>(existing);
+        allTags.addAll(newTags);
+
+        return allTags;
     }
     
     private Block findBlockById(Long blockId) {

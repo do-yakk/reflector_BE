@@ -1,11 +1,13 @@
 package com.doyak.reflector.converter;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.doyak.reflector.domain.Block;
 import com.doyak.reflector.domain.CodeBlock;
+import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.domain.User;
@@ -47,6 +49,7 @@ public class BlockConverter {
                 .language(request.getLanguage())
                 .performTime(request.getPerformTime())
                 .performMem(request.getPerformMem())
+                .hashtags(new HashSet<>())
                 .build();
     }
 
@@ -68,14 +71,16 @@ public class BlockConverter {
     }
 
     private BlockResponse.Code toCodeResponse(CodeBlock block) {
+    	List<String> hashtags = block.getHashtags().stream().map(Hashtag::getHash).toList();
         return BlockResponse.Code.builder()
                 .content(block.getContent())
                 .language(block.getLanguage())
                 .performTime(block.getPerformTime())
                 .performMem(block.getPerformMem())
+                .hashtags(hashtags)
                 .build();
     }
-
+    
     // Entity List → Response List
     public List<BlockResponse> toResponseList(List<Block> blocks) {
         return blocks.stream()
