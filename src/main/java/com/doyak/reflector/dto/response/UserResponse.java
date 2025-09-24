@@ -1,5 +1,7 @@
 package com.doyak.reflector.dto.response;
 
+import java.time.LocalDate;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +15,8 @@ public class UserResponse {
     @AllArgsConstructor
     @Getter
     public static class UserLoginResponseDTO {
-		String email;
-		String token;
+		private String email;
+		private String token;
 	}
 	
 	@Builder
@@ -22,7 +24,16 @@ public class UserResponse {
     @AllArgsConstructor
     @Getter
     public static class UserUpdateDTO {
-		String email;
+		private String email;
 	}
-
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+    public static class UserTrackerDTO {
+		private LocalDate date;
+		private Long count;
+	}
+	
 }
