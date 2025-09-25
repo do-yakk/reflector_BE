@@ -11,14 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.doyak.reflector.converter.PostConverter;
 import com.doyak.reflector.domain.Block;
-import com.doyak.reflector.domain.CodeBlock;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.domain.enums.SortType;
 import com.doyak.reflector.dto.request.PostRequest;
 import com.doyak.reflector.dto.response.PostResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
-import com.doyak.reflector.payload.exception.GeneralException;
 import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.HashtagRepository;
 import com.doyak.reflector.repository.PostRepository;
@@ -65,9 +63,9 @@ public class PostService {
 
     private Post findPostById(User user, Long postId) {
     	Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	if (!post.getUser().getId().equals(user.getId())) {
-    		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
+    		throw new PostHandler(ErrorStatus.POST_FORBIDDEN);
     	}
         return post;
     }
@@ -99,9 +97,9 @@ public class PostService {
    
     private Post findPostWithBlocks(User user, Long postId) {
     	Post post = postRepository.findByIdWithBlocks(postId)
-    			.orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+    			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	if (!post.getUser().getId().equals(user.getId())) {
-    		throw new GeneralException(ErrorStatus.POST_FORBIDDEN);
+    		throw new PostHandler(ErrorStatus.POST_FORBIDDEN);
     	}
       return post;
     }

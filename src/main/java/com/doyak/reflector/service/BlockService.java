@@ -18,7 +18,6 @@ import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
-import com.doyak.reflector.payload.exception.GeneralException;
 import com.doyak.reflector.payload.exception.handler.BlockHandler;
 import com.doyak.reflector.payload.exception.handler.PostHandler;
 import com.doyak.reflector.repository.BlockRepository;
@@ -28,7 +27,6 @@ import com.doyak.reflector.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Comparator;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +42,7 @@ public class BlockService {
     @Transactional
     public BlockResponse createBlock(BlockCommand request, Long postId) {
     	Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
     	
     	double gap = 10;
     	
@@ -83,7 +81,7 @@ public class BlockService {
         			codeRequest.getPerformTime(), codeRequest.getPerformMem());
             return blockConverter.toResponse(codeBlock);
         } else {
-        	throw new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
+        	throw new BlockHandler(ErrorStatus.UNSUPPORTED_BLOCK_TYPE);
         }
     }
 
@@ -95,15 +93,12 @@ public class BlockService {
     	}
     	
         Block block = blockRepository.findById(blockId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
+                .orElseThrow(() -> new BlockHandler(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
         
         if (block instanceof CodeBlock codeBlock) {
             codeBlock.getHashtags().forEach(h -> h.getCodeBlocks().remove(codeBlock));
             codeBlock.getHashtags().clear();
         }
-
-        Double deletedOrderIndex = block.getOrderIndex();
-
         blockRepository.delete(block);
     }
     
@@ -129,7 +124,7 @@ public class BlockService {
     
     private Block findBlockById(Long blockId) {
     	Block block = blockRepository.findById(blockId)
-    		    .orElseThrow(() -> new GeneralException(ErrorStatus.BLOCK_NOT_FOUND));
+    		    .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
     	return block;
     }
     
