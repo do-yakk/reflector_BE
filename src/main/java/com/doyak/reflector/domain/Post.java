@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.doyak.reflector.domain.common.BaseEntity;
+import com.doyak.reflector.domain.enums.Level;
 import com.doyak.reflector.domain.enums.Site;
 
 import jakarta.persistence.CascadeType;
@@ -48,7 +49,7 @@ public class Post extends BaseEntity{
 	private Site site;
 	
 	private String title;
-	private Integer level;
+	private Level level;
 	
 	@Lob
 	private String content;
@@ -58,7 +59,7 @@ public class Post extends BaseEntity{
 	private List<Block> blocks = new ArrayList<>();
 
 	// 업데이트 
-	public void update(Site site, Integer level, String title, String content) {
+	public void update(Site site, Level level, String title, String content) {
         if (site != null) this.site = site;
         if (level != null) this.level = level;
         if (title != null) this.title = title;

@@ -1,9 +1,10 @@
 package com.doyak.reflector.dto.request;
 
+import com.doyak.reflector.domain.enums.Level;
 import com.doyak.reflector.domain.enums.Site;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +19,11 @@ public class PostRequest {
 	@AllArgsConstructor
 	public static class PostCommand {
 		
-		@NotNull
+	    @Schema(description = "알고리즘 문제 사이트 선택", example = "BAEKJOON")
 		private Site site;
-		private Integer level;
+	    
+	    @Schema(description = "알고리즘 난이도 선택", example = "BAEKJOON_GOLD")
+		private Level level;
 		
 		@NotBlank
 		private String title;
