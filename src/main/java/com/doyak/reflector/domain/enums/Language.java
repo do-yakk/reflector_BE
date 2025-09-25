@@ -1,5 +1,6 @@
 package com.doyak.reflector.domain.enums;
 
 public enum Language {
-    JAVA, PYTHON, C, JS
+	C, CPP, CSHARP, GO, JAVA, JAVASCRIPT,
+	KOTLIN, PYTHON2, PYTHON3, RUBY, SCALA, SWIFT
 }
