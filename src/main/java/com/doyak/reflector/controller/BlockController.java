@@ -44,21 +44,21 @@ public class BlockController {
 	@GetMapping("/{blockId}")
 	@Operation(summary = "해당 블럭 읽기", description = "읽어오길 원하는 블럭 아이디를 입력해주세요.")
     public ApiResponse<BlockResponse> getBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId) {
-        return ApiResponse.onSuccess(blockService.getBlock(blockId));
+        return ApiResponse.onSuccess(blockService.getBlock(postId, blockId));
     }
     
     @PutMapping("/text/{blockId}")
     @Operation(summary = "텍스트 블럭 수정", description = "수정할 텍스트 내용을 입력해주세요.")
     public ApiResponse<BlockResponse> updateTextBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId,
             											@RequestBody BlockRequest.TextCommand request) {
-        return ApiResponse.onSuccess(blockService.updateBlock(blockId, request));
+        return ApiResponse.onSuccess(blockService.updateBlock(postId, blockId, request));
     }
     
     @PutMapping("/code/{blockId}")
     @Operation(summary = "코드 블럭 수정", description = "수정할 코드 내용을 입력해주세요.")
     public ApiResponse<BlockResponse> updateCodeBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId,
     													@RequestBody BlockRequest.CodeCommand request) {
-        return ApiResponse.onSuccess(blockService.updateBlock(blockId, request));
+        return ApiResponse.onSuccess(blockService.updateBlock(postId, blockId, request));
     }
 
     @DeleteMapping("/{blockId}")

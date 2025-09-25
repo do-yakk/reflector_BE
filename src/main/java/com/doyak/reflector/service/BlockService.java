@@ -59,16 +59,15 @@ public class BlockService {
     
     // 단일 블럭 조회 
     @Transactional(readOnly = true)
-    public BlockResponse getBlock(Long blockId) {
-        Block block = findBlockById(blockId);
+    public BlockResponse getBlock(Long postId, Long blockId) {
+        Block block = findBlockById(postId, blockId);
         return blockConverter.toResponse(block);
     }
 
     // 블럭 수정
     @Transactional
-    public BlockResponse updateBlock(Long blockId, BlockCommand request) {
-        Block block = findBlockById(blockId);
-
+    public BlockResponse updateBlock(Long postId, Long blockId, BlockCommand request) {
+        Block block = findBlockById(postId, blockId);
         if (request instanceof BlockRequest.TextCommand textRequest && block instanceof TextBlock textBlock) {
             textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
@@ -88,13 +87,7 @@ public class BlockService {
     // 블럭 삭제 
     @Transactional
     public void deleteBlock(Long postId, Long blockId) {
-    	if (!postRepository.existsById(postId)) {
-    		throw new PostHandler(ErrorStatus.POST_NOT_FOUND);
-    	}
-    	
-        Block block = blockRepository.findById(blockId)
-                .orElseThrow(() -> new BlockHandler(ErrorStatus.UNSUPPORTED_BLOCK_TYPE));
-        
+        Block block = findBlockById(postId, blockId);
         if (block instanceof CodeBlock codeBlock) {
             codeBlock.getHashtags().forEach(h -> h.getCodeBlocks().remove(codeBlock));
             codeBlock.getHashtags().clear();
@@ -122,9 +115,12 @@ public class BlockService {
         return allTags;
     }
     
-    private Block findBlockById(Long blockId) {
+    private Block findBlockById(Long postId, Long blockId) {
     	Block block = blockRepository.findById(blockId)
     		    .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+    	if (!block.getPost().getPostId().equals(postId)) {
+    		throw new BlockHandler(ErrorStatus.BLOCK_FORBIDDEN);
+    	}
     	return block;
     }
     
