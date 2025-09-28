@@ -152,7 +152,7 @@ public class UserService {
         
 		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, newAccessToken), newRefreshToken);
     }
-    
+
     @Transactional
     public void logout(User user) {
         String email = user.getEmail();

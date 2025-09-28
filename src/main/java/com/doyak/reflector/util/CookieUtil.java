@@ -36,5 +36,14 @@ public class CookieUtil {
         cookie.setMaxAge((int)(expireMs / 1000));
         response.addCookie(cookie);
     }
+    
+    public void deleteRefreshTokenCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 
 }

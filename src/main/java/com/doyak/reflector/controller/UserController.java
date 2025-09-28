@@ -108,4 +108,11 @@ public class UserController {
 		return ApiResponse.onSuccess(loginWrapper.getLoginResponse());
 	}
 	
+	@DeleteMapping("/logout")
+	@Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 쿠키를 삭제합니다.")
+	public ApiResponse<Void> logout(@AuthenticationPrincipal User user, HttpServletResponse response) {
+		userService.logout(user);
+		cookieUtil.deleteRefreshTokenCookie(response);
+		return ApiResponse.onSuccess(null);
+	}
 }
