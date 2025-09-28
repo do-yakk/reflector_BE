@@ -1,9 +1,6 @@
 package com.doyak.reflector.converter;
 
-import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.doyak.reflector.domain.User;
@@ -13,10 +10,17 @@ import com.doyak.reflector.dto.request.UserRequest;
 
 public class UserConverter {
 	
-	public static UserResponse.UserLoginResponseDTO toLoginResponse(User user, String token) {
+	public static UserResponse.UserSignupResponseDTO toSignupResponse(User user) {
+		return UserResponse.UserSignupResponseDTO.builder()
+				.email(user.getEmail())
+				.build();
+	}
+	
+	public static UserResponse.UserLoginResponseDTO toLoginResponse(User user, String accessToken, String refreshToken) {
 		return UserResponse.UserLoginResponseDTO.builder()
 				.email(user.getEmail())
-				.token(token)
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
 				.build();
 	}
 	

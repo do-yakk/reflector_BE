@@ -45,7 +45,7 @@ public class UserService {
     }
     
     @Transactional
-    public UserResponse.UserLoginResponseDTO signup(UserRequest.UserSignUpDTO request) {
+    public UserResponse.UserSignupResponseDTO signup(UserRequest.UserSignUpDTO request) {
     	if (userRepository.findByEmail(request.getEmail()).isPresent())
     		throw new UserHandler(ErrorStatus.USER_ALREADY_EXIST);
     	
@@ -54,9 +54,7 @@ public class UserService {
     	User newUser = UserConverter.toUser(request, encodedPassword);
         User savedUser = userRepository.save(newUser);
     	
-    	String accessToken = jwtUtil.createToken("access", savedUser, 1000*60*5);
-    	
-    	return UserConverter.toLoginResponse(savedUser, accessToken);
+    	return UserConverter.toSignupResponse(savedUser);
     }
     
     @Transactional
@@ -73,7 +71,7 @@ public class UserService {
 
 		redisUtil.setDataExpire("refreshToken: " + user.getEmail(), refreshToken, refreshTokenExpire);
 		
-		return UserConverter.toLoginResponse(user, accessToken);
+		return UserConverter.toLoginResponse(user, accessToken, refreshToken);
 	}
     
     @Transactional

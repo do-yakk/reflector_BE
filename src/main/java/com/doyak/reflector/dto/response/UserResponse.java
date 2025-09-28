@@ -14,9 +14,18 @@ public class UserResponse {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor
     @Getter
+    public static class UserSignupResponseDTO {
+		private String email;
+	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
     public static class UserLoginResponseDTO {
 		private String email;
-		private String token;
+		private String accessToken;
+		private String refreshToken;
 	}
 	
 	@Builder
