@@ -16,6 +16,7 @@ import com.doyak.reflector.domain.User;
 import com.doyak.reflector.repository.PostRepository;
 import com.doyak.reflector.repository.UserRepository;
 import com.doyak.reflector.util.RedisUtil;
+
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
@@ -58,7 +59,7 @@ public class UserService {
     }
     
     @Transactional
-	public UserResponse.UserLoginResponseDTO login(UserRequest.UserLoginDTO request) {
+	public UserResponse.UserLoginWrapperDTO login(UserRequest.UserLoginDTO request) {
 		User user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
 		
@@ -68,10 +69,10 @@ public class UserService {
 		
 		String refreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
 		String accessToken = jwtUtil.createToken("access", user, accessTokenExpire);
-
+		
 		redisUtil.setDataExpire("refreshToken: " + user.getEmail(), refreshToken, refreshTokenExpire);
 		
-		return UserConverter.toLoginResponse(user, accessToken, refreshToken);
+		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, accessToken), refreshToken);
 	}
     
     @Transactional
@@ -128,5 +129,33 @@ public class UserService {
         */
 
         return UserConverter.toTrackerResponse(queryResult);
+    }
+    
+    @Transactional
+    public UserResponse.UserLoginWrapperDTO reissue(String refreshToken) {
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new UserHandler(ErrorStatus.NOT_VALID_TOKEN);
+        }
+
+        String email = jwtUtil.getUserEmail(refreshToken);
+
+        String savedToken = redisUtil.getData("refreshToken: " + email);
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
+            throw new UserHandler(ErrorStatus.WRONG_TYPE_TOKEN);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+        
+        String newRefreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
+        String newAccessToken = jwtUtil.createToken("access", user, accessTokenExpire);
+        
+		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, newAccessToken), newRefreshToken);
+    }
+    
+    @Transactional
+    public void logout(User user) {
+        String email = user.getEmail();
+        redisUtil.deleteData("refreshToken: " + email);
     }
 }

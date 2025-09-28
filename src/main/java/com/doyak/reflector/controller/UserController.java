@@ -15,11 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
+import com.doyak.reflector.dto.response.UserResponse.UserSignupResponseDTO;
 import com.doyak.reflector.payload.ApiResponse;
 import com.doyak.reflector.service.EmailService;
 import com.doyak.reflector.service.UserService;
+import com.doyak.reflector.util.CookieUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -32,18 +36,22 @@ public class UserController {
 	
 	private final EmailService emailService;
 	
+	private final CookieUtil cookieUtil;
+	
 	@PostMapping("/sign-up")
 	@Operation(summary = "회원가입", description = "회원가입에 사용할 이메일과 비밀번호를 입력해주세요.")
-	public ApiResponse<UserResponse.UserLoginResponseDTO> signup(@Valid @RequestBody UserRequest.UserSignUpDTO request) {
-		UserResponse.UserLoginResponseDTO response = userService.signup(request);
+	public ApiResponse<UserResponse.UserSignupResponseDTO> signup(@Valid @RequestBody UserRequest.UserSignUpDTO request) {
+		UserSignupResponseDTO response = userService.signup(request);
 		return ApiResponse.onSuccess(response);
 	}
 	
 	@PostMapping("/login")
 	@Operation(summary = "로그인", description = "로그인할 유저의 이메일과 비밀번호를 입력해주세요.")
-	public ApiResponse<UserResponse.UserLoginResponseDTO> login(@Valid @RequestBody UserRequest.UserLoginDTO request) {
-		UserResponse.UserLoginResponseDTO response = userService.login(request);
-		return ApiResponse.onSuccess(response);
+	public ApiResponse<UserResponse.UserLoginResponseDTO> login(@Valid @RequestBody UserRequest.UserLoginDTO request, 
+																HttpServletResponse response) {
+		UserResponse.UserLoginWrapperDTO loginWrapper = userService.login(request);
+		cookieUtil.addRefreshTokenCookie(response, loginWrapper.getRefreshToken());
+		return ApiResponse.onSuccess(loginWrapper.getLoginResponse());
 	}
 	
 	@PutMapping
@@ -88,6 +96,16 @@ public class UserController {
 																	  @PathVariable("year") Integer year) {
 		List<UserResponse.UserTrackerDTO> response = userService.getCalendarDate(user, year);
 		return ApiResponse.onSuccess(response);
+	}
+	
+	@PostMapping("/reissue")
+	@Operation(summary = "토큰 재발급", description = "로그인할 유저의 이메일과 비밀번호를 입력해주세요.")
+	public ApiResponse<UserResponse.UserLoginResponseDTO> reissue(HttpServletRequest request, 
+																HttpServletResponse response) {
+		String refreshToken = cookieUtil.getRefreshToken(request);
+		UserResponse.UserLoginWrapperDTO loginWrapper = userService.reissue(refreshToken);
+		cookieUtil.addRefreshTokenCookie(response, loginWrapper.getRefreshToken());
+		return ApiResponse.onSuccess(loginWrapper.getLoginResponse());
 	}
 	
 }

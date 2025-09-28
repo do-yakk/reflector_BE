@@ -28,13 +28,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = jwtUtil.resolveToken(request);
-
-        if (accessToken != null && jwtUtil.validateToken(accessToken)) {
-            Authentication auth = jwtUtil.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        if (accessToken == null) {
+        	sendError(response, "Access token missing");
+        	return;
         }
+        
+        String category = jwtUtil.getCategory(accessToken);
+        if (!"access".equals(category) || !jwtUtil.validateToken(accessToken)) {
+            sendError(response, "invalid or expired access token");
+            return;
+        }
+        
+        Authentication auth = jwtUtil.getAuthentication(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
+    }
+    
+    private void sendError(HttpServletResponse response, String message) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 
 }

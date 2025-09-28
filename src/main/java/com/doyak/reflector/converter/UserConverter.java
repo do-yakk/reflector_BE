@@ -16,10 +16,16 @@ public class UserConverter {
 				.build();
 	}
 	
-	public static UserResponse.UserLoginResponseDTO toLoginResponse(User user, String accessToken, String refreshToken) {
+	public static UserResponse.UserLoginResponseDTO toLoginResponse(User user, String accessToken) {
 		return UserResponse.UserLoginResponseDTO.builder()
 				.email(user.getEmail())
 				.accessToken(accessToken)
+				.build();
+	}
+	
+	public static UserResponse.UserLoginWrapperDTO toLoginWrapper(UserResponse.UserLoginResponseDTO response, String refreshToken) {
+		return UserResponse.UserLoginWrapperDTO.builder()
+				.loginResponse(response)
 				.refreshToken(refreshToken)
 				.build();
 	}

@@ -91,6 +91,10 @@ public class JwtUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, null, null);
     }
     
+    public String getCategory(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    }
+    
     public String getUserEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userEmail", String.class);
     }
