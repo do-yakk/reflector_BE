@@ -15,6 +15,7 @@ import com.doyak.reflector.converter.UserConverter;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.repository.PostRepository;
 import com.doyak.reflector.repository.UserRepository;
+import com.doyak.reflector.util.RedisUtil;
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
@@ -33,6 +34,10 @@ public class UserService {
 	private final PostRepository postRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
+    
+    private int refreshTokenExpire = 1000*60*60*24;
+    private int accessTokenExpire = 1000*60*60;
     
     public void checkEmail(UserRequest.UserEmailDTO request) {
     	if (userRepository.findByEmail(request.getEmail()).isPresent())
@@ -49,7 +54,7 @@ public class UserService {
     	User newUser = UserConverter.toUser(request, encodedPassword);
         User savedUser = userRepository.save(newUser);
     	
-    	String accessToken = jwtUtil.createAccessToken(savedUser);
+    	String accessToken = jwtUtil.createToken("access", savedUser, 1000*60*5);
     	
     	return UserConverter.toLoginResponse(savedUser, accessToken);
     }
@@ -63,7 +68,10 @@ public class UserService {
             throw new UserHandler(ErrorStatus.INVALID_PASSWORD);
         }
 		
-		String accessToken = jwtUtil.createAccessToken(user);
+		String refreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
+		String accessToken = jwtUtil.createToken("access", user, accessTokenExpire);
+
+		redisUtil.setDataExpire("refreshToken: " + user.getEmail(), refreshToken, refreshTokenExpire);
 		
 		return UserConverter.toLoginResponse(user, accessToken);
 	}

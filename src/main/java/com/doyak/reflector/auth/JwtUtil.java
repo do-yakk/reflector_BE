@@ -42,11 +42,12 @@ public class JwtUtil {
     }
     
     // 토큰 생성 - 추후 만료 시간 추가 예정 
-    public String createAccessToken(User user) {
+    public String createToken(String category, User user, int expirationMillis) {
         return Jwts.builder()
-                .claims(createClaims(user))
+                .claims(createClaims(user, category))
                 .subject(String.valueOf(user.getId()))
                 .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(secretKey)
                .compact();
     }
@@ -76,24 +77,19 @@ public class JwtUtil {
         }
     }
     
-    private static Map<String, Object> createClaims(User user) {
+    private static Map<String, Object> createClaims(User user, String category) {
     	Map<String, Object> claims = new HashMap<>();
     	
-    	log.info("userId: " + user.getId());
-        log.info("userEmail: " + user.getEmail());
-        
+        claims.put("category", category);
         claims.put("userId", user.getId());
         claims.put("userEmail", user.getEmail());
         return claims;
     }
     
-    
-    
     public Authentication getAuthentication(String token) throws UsernameNotFoundException {
         UserDetails userDetails = userDetailService.loadUserByUsername(this.getUserEmail(token));
         return new UsernamePasswordAuthenticationToken(userDetails, null, null);
     }
-    
     
     public String getUserEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userEmail", String.class);
