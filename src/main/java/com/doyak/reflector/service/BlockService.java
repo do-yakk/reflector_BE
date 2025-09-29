@@ -14,6 +14,7 @@ import com.doyak.reflector.domain.CodeBlock;
 import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
+import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
@@ -40,9 +41,12 @@ public class BlockService {
 
     // 블럭 생성  
     @Transactional
-    public BlockResponse createBlock(BlockCommand request, Long postId) {
+    public BlockResponse createBlock(BlockCommand request, Long postId, User user) {
     	Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
+    	if (!post.getUser().getId().equals(user.getId())) {
+    		throw new PostHandler(ErrorStatus.POST_FORBIDDEN);
+    	}
     	
     	double gap = 10;
     	

@@ -1,5 +1,6 @@
 package com.doyak.reflector.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.ApiResponse;
@@ -30,15 +32,17 @@ public class BlockController {
 	@PostMapping("/text")
 	@Operation(summary = "텍스트 블럭 생성", description = "텍스트 내용을 입력해주세요.")
 	public ApiResponse<BlockResponse> createTextBlock(@PathVariable("postId") Long postId,
-	        											@RequestBody BlockRequest.TextCommand request) {
-	    return ApiResponse.onSuccess(blockService.createBlock(request, postId));
+	        											@RequestBody BlockRequest.TextCommand request,
+	        											@AuthenticationPrincipal User user) {
+	    return ApiResponse.onSuccess(blockService.createBlock(request, postId, user));
 	}
 
 	@PostMapping("/code")
 	@Operation(summary = "코드 블럭 생성", description = "코드 내용을 입력해주세요.")
 	public ApiResponse<BlockResponse> createCodeBlock(@PathVariable("postId") Long postId,
-	        											@RequestBody BlockRequest.CodeCommand request) {
-	    return ApiResponse.onSuccess(blockService.createBlock(request, postId));
+	        											@RequestBody BlockRequest.CodeCommand request,
+	        											@AuthenticationPrincipal User user) {
+	    return ApiResponse.onSuccess(blockService.createBlock(request, postId, user));
 	}
 	
 	@GetMapping("/{blockId}")
