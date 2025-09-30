@@ -132,7 +132,7 @@ public class UserService {
     }
     
     @Transactional
-    public UserResponse.UserLoginWrapperDTO reissue(String refreshToken) {
+    public UserResponse.UserLoginResponseDTO reissue(String refreshToken) {
     	
         if (!jwtUtil.validateToken(refreshToken)) {
             throw new UserHandler(ErrorStatus.NOT_VALID_TOKEN);
@@ -148,12 +148,9 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
         
-        String newRefreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
         String newAccessToken = jwtUtil.createToken("access", user, accessTokenExpire);
         
-        redisUtil.setDataExpire("refreshToken: " + user.getEmail(), newRefreshToken, refreshTokenExpire);   
-        
-		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, newAccessToken), newRefreshToken);
+		return UserConverter.toLoginResponse(user, newAccessToken);
     }
 
     @Transactional

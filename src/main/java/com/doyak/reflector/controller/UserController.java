@@ -100,12 +100,10 @@ public class UserController {
 	
 	@PostMapping("/reissue")
 	@Operation(summary = "토큰 재발급", description = "로그인할 유저의 이메일과 비밀번호를 입력해주세요.")
-	public ApiResponse<UserResponse.UserLoginResponseDTO> reissue(HttpServletRequest request, 
-																HttpServletResponse response) {
+	public ApiResponse<UserResponse.UserLoginResponseDTO> reissue(HttpServletRequest request) {
 		String refreshToken = cookieUtil.getRefreshToken(request);
-		UserResponse.UserLoginWrapperDTO loginWrapper = userService.reissue(refreshToken);
-		cookieUtil.addRefreshTokenCookie(response, loginWrapper.getRefreshToken());
-		return ApiResponse.onSuccess(loginWrapper.getLoginResponse());
+		UserResponse.UserLoginResponseDTO response = userService.reissue(refreshToken);
+		return ApiResponse.onSuccess(response);
 	}
 	
 	@DeleteMapping("/logout")
