@@ -19,7 +19,7 @@ public class PostResponse {
 	public static class PostInfo {
 		private Long postId;
 		private Site site;
-		private Integer level;
+		private String level;
 		private String title;
 		private String content;	
 		private String author;
@@ -35,7 +35,7 @@ public class PostResponse {
 	public static class PostOverview {
 		private Long postId;
 		private Site site;
-		private Integer level;
+		private String level;
 		private String title;
 	}
 }

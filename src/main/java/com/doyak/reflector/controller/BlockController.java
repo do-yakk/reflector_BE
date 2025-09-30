@@ -1,5 +1,6 @@
 package com.doyak.reflector.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.doyak.reflector.domain.User;
 import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.response.BlockResponse;
 import com.doyak.reflector.payload.ApiResponse;
@@ -30,49 +32,54 @@ public class BlockController {
 	@PostMapping("/text")
 	@Operation(summary = "텍스트 블럭 생성", description = "텍스트 내용을 입력해주세요.")
 	public ApiResponse<BlockResponse> createTextBlock(@PathVariable("postId") Long postId,
-	        											@RequestBody BlockRequest.TextCommand request) {
-	    return ApiResponse.onSuccess(blockService.createBlock(request, postId));
+	        											@RequestBody BlockRequest.TextCommand request,
+	        											@AuthenticationPrincipal User user) {
+	    return ApiResponse.onSuccess(blockService.createBlock(request, postId, user));
 	}
 
 	@PostMapping("/code")
 	@Operation(summary = "코드 블럭 생성", description = "코드 내용을 입력해주세요.")
 	public ApiResponse<BlockResponse> createCodeBlock(@PathVariable("postId") Long postId,
-	        											@RequestBody BlockRequest.CodeCommand request) {
-	    return ApiResponse.onSuccess(blockService.createBlock(request, postId));
+	        											@RequestBody BlockRequest.CodeCommand request,
+	        											@AuthenticationPrincipal User user) {
+	    return ApiResponse.onSuccess(blockService.createBlock(request, postId, user));
 	}
 	
 	@GetMapping("/{blockId}")
 	@Operation(summary = "해당 블럭 읽기", description = "읽어오길 원하는 블럭 아이디를 입력해주세요.")
-    public ApiResponse<BlockResponse> getBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId) {
-        return ApiResponse.onSuccess(blockService.getBlock(blockId));
+    public ApiResponse<BlockResponse> getBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, @AuthenticationPrincipal User user) {
+        return ApiResponse.onSuccess(blockService.getBlock(postId, blockId, user));
     }
     
     @PutMapping("/text/{blockId}")
     @Operation(summary = "텍스트 블럭 수정", description = "수정할 텍스트 내용을 입력해주세요.")
     public ApiResponse<BlockResponse> updateTextBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId,
+    													@AuthenticationPrincipal User user,
             											@RequestBody BlockRequest.TextCommand request) {
-        return ApiResponse.onSuccess(blockService.updateBlock(blockId, request));
+        return ApiResponse.onSuccess(blockService.updateBlock(postId, blockId, user, request));
     }
     
     @PutMapping("/code/{blockId}")
     @Operation(summary = "코드 블럭 수정", description = "수정할 코드 내용을 입력해주세요.")
     public ApiResponse<BlockResponse> updateCodeBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId,
+    													@AuthenticationPrincipal User user,
     													@RequestBody BlockRequest.CodeCommand request) {
-        return ApiResponse.onSuccess(blockService.updateBlock(blockId, request));
+        return ApiResponse.onSuccess(blockService.updateBlock(postId, blockId, user, request));
     }
 
     @DeleteMapping("/{blockId}")
 	@Operation(summary = "해당 블럭 삭제", description = "삭제하길 원하는 블럭 아이디를 입력해주세요.")
-    public ApiResponse<Void> deleteBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId) {
-        blockService.deleteBlock(postId, blockId);
+    public ApiResponse<Void> deleteBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, @AuthenticationPrincipal User user) {
+        blockService.deleteBlock(postId, blockId, user);
         return ApiResponse.onSuccess(null);
     }
     
     @PatchMapping("/{blockId}")
     @Operation(summary = "블럭 순서 변경", description = "순서 변경을 원하는 블럭 정보와 원하는 위치 인덱스를 입력해주세요.")
     public ApiResponse<List<BlockResponse>> reorderBlock(@PathVariable("postId") Long postId, @PathVariable("blockId") Long blockId, 
+    										@AuthenticationPrincipal User user,
     									  @RequestBody BlockRequest.ReorderBlock request) {
-    	List<BlockResponse> response = blockService.reorderBlock(postId, blockId, request);
+    	List<BlockResponse> response = blockService.reorderBlock(postId, blockId, user, request);
         return ApiResponse.onSuccess(response);
     }
 

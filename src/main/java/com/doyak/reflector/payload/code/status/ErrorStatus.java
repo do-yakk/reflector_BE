@@ -26,6 +26,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Block 에러 
     BLOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK4001", "블럭을 찾을 수 없습니다."),
     UNSUPPORTED_BLOCK_TYPE(HttpStatus.BAD_REQUEST, "BLOCK4002", "지원하지 않는 블럭타입입니다."),
+    BLOCK_FORBIDDEN(HttpStatus.FORBIDDEN, "BLOCK4003", "다른 사용자의 포스트입니다."),
 
 	// JWT 토큰 관련 에러 
 	NOT_VALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN4001", "유효하지 않은 토큰입니다."),

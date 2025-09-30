@@ -41,7 +41,7 @@ public class PostConverter {
         return PostResponse.PostInfo.builder()
         			.postId(post.getPostId())
         			.site(post.getSite())
-        			.level(post.getLevel())
+        			.level(post.getLevel().getDisplayName())
         			.title(post.getTitle())
         			.content(post.getContent())
         			.author(post.getUser().getEmail())
@@ -66,7 +66,7 @@ public class PostConverter {
     	return PostResponse.PostOverview.builder()
     			.postId(post.getPostId())
 				.title(post.getTitle())
-				.level(post.getLevel())
+				.level(post.getLevel().getDisplayName())
 				.site(post.getSite())
 				.build();
     }
