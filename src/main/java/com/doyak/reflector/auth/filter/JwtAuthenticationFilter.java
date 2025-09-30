@@ -30,13 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = jwtUtil.resolveToken(request);
         
         if (accessToken == null) {
-        	sendError(response, "Access token missing");
+        	filterChain.doFilter(request, response);
         	return;
         }
         
         String category = jwtUtil.getCategory(accessToken);
         if (!"access".equals(category) || !jwtUtil.validateToken(accessToken)) {
-            sendError(response, "invalid or expired access token");
+        	filterChain.doFilter(request, response);
             return;
         }
         

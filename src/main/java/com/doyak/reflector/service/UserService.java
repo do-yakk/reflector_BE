@@ -133,6 +133,7 @@ public class UserService {
     
     @Transactional
     public UserResponse.UserLoginWrapperDTO reissue(String refreshToken) {
+    	
         if (!jwtUtil.validateToken(refreshToken)) {
             throw new UserHandler(ErrorStatus.NOT_VALID_TOKEN);
         }
@@ -149,6 +150,8 @@ public class UserService {
         
         String newRefreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
         String newAccessToken = jwtUtil.createToken("access", user, accessTokenExpire);
+        
+        redisUtil.setDataExpire("refreshToken: " + user.getEmail(), newRefreshToken, refreshTokenExpire);   
         
 		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, newAccessToken), newRefreshToken);
     }
