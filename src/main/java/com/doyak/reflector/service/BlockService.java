@@ -42,11 +42,7 @@ public class BlockService {
     // 블럭 생성  
     @Transactional
     public BlockResponse createBlock(BlockCommand request, Long postId, User user) {
-    	Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
-    	if (!post.getUser().getId().equals(user.getId())) {
-    		throw new PostHandler(ErrorStatus.POST_FORBIDDEN);
-    	}
+    	Post post = findPostById(postId, user);
     	
     	double gap = 10;
     	
@@ -63,15 +59,15 @@ public class BlockService {
     
     // 단일 블럭 조회 
     @Transactional(readOnly = true)
-    public BlockResponse getBlock(Long postId, Long blockId) {
-        Block block = findBlockById(postId, blockId);
+    public BlockResponse getBlock(Long postId, Long blockId, User user) {
+        Block block = findBlockById(postId, blockId, user);
         return blockConverter.toResponse(block);
     }
 
     // 블럭 수정
     @Transactional
-    public BlockResponse updateBlock(Long postId, Long blockId, BlockCommand request) {
-        Block block = findBlockById(postId, blockId);
+    public BlockResponse updateBlock(Long postId, Long blockId, User user, BlockCommand request) {
+        Block block = findBlockById(postId, blockId, user);
         if (request instanceof BlockRequest.TextCommand textRequest && block instanceof TextBlock textBlock) {
             textBlock.update(textRequest.getContent());
             return blockConverter.toResponse(textBlock);
@@ -90,13 +86,40 @@ public class BlockService {
 
     // 블럭 삭제 
     @Transactional
-    public void deleteBlock(Long postId, Long blockId) {
-        Block block = findBlockById(postId, blockId);
+    public void deleteBlock(Long postId, Long blockId, User user) {
+        Block block = findBlockById(postId, blockId, user);
         if (block instanceof CodeBlock codeBlock) {
             codeBlock.getHashtags().forEach(h -> h.getCodeBlocks().remove(codeBlock));
             codeBlock.getHashtags().clear();
         }
         blockRepository.delete(block);
+    }
+    
+
+    @Transactional
+    public List<BlockResponse> reorderBlock(Long postId, Long blockId, User user, BlockRequest.ReorderBlock request) {
+    	Post post = findPostById(postId, user);
+
+    	List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
+    	Block movingBlock = blockRepository.findById(blockId)
+    						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
+    	
+    	blocks.remove(movingBlock);
+        
+    	Integer newIndex = request.getNewIndex();
+    	Double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+    	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	
+    	if (next - prev <= 1) {
+    	    normalizeOrderIndexes(blocks);
+    	    blocks.sort(Comparator.comparing(Block::getOrderIndex));    	    
+    	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
+        	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+    	}
+
+    	movingBlock.moveTo((prev + next) / 2);
+    	blocks.add(newIndex, movingBlock);
+    	return blockConverter.toResponseList(blocks);
     }
     
     private Set<Hashtag> getHashtags(List<String> tagNames) {
@@ -119,7 +142,8 @@ public class BlockService {
         return allTags;
     }
     
-    private Block findBlockById(Long postId, Long blockId) {
+    private Block findBlockById(Long postId, Long blockId, User user) {
+    	Post post = findPostById(postId, user);
     	Block block = blockRepository.findById(blockId)
     		    .orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
     	if (!block.getPost().getPostId().equals(postId)) {
@@ -128,31 +152,13 @@ public class BlockService {
     	return block;
     }
     
-    @Transactional
-    public List<BlockResponse> reorderBlock(Long postId, Long blockId, BlockRequest.ReorderBlock request) {
+    private Post findPostById(Long postId, User user) {
     	Post post = postRepository.findById(postId)
-    			.orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
-    	
-    	List<Block> blocks = blockRepository.findAllByPostOrderByOrderIndexAsc(post);
-    	Block movingBlock = blockRepository.findById(blockId)
-    						.orElseThrow(() -> new BlockHandler(ErrorStatus.BLOCK_NOT_FOUND));
-    	
-    	blocks.remove(movingBlock);
-        
-    	Integer newIndex = request.getNewIndex();
-    	Double prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
-    	Double next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
-    	
-    	if (next - prev <= 1) {
-    	    normalizeOrderIndexes(blocks);
-    	    blocks.sort(Comparator.comparing(Block::getOrderIndex));    	    
-    	    prev = newIndex == 0 ? 0 : blocks.get(newIndex - 1).getOrderIndex();
-        	next = newIndex == blocks.size() ? prev + 10 : blocks.get(newIndex).getOrderIndex();
+                .orElseThrow(() -> new PostHandler(ErrorStatus.POST_NOT_FOUND));
+    	if (!post.getUser().getId().equals(user.getId())) {
+    		throw new PostHandler(ErrorStatus.POST_FORBIDDEN);
     	}
-
-    	movingBlock.moveTo((prev + next) / 2);
-    	blocks.add(newIndex, movingBlock);
-    	return blockConverter.toResponseList(blocks);
+    	return post;
     }
     
     @Transactional
