@@ -15,6 +15,8 @@ import com.doyak.reflector.converter.UserConverter;
 import com.doyak.reflector.domain.User;
 import com.doyak.reflector.repository.PostRepository;
 import com.doyak.reflector.repository.UserRepository;
+import com.doyak.reflector.util.RedisUtil;
+
 import com.doyak.reflector.dto.request.UserRequest;
 import com.doyak.reflector.dto.response.UserResponse;
 import com.doyak.reflector.payload.code.status.ErrorStatus;
@@ -33,6 +35,10 @@ public class UserService {
 	private final PostRepository postRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
+    
+    private int refreshTokenExpire = 1000*60*60*24;
+    private int accessTokenExpire = 1000*60*60;
     
     public void checkEmail(UserRequest.UserEmailDTO request) {
     	if (userRepository.findByEmail(request.getEmail()).isPresent())
@@ -40,7 +46,7 @@ public class UserService {
     }
     
     @Transactional
-    public UserResponse.UserLoginResponseDTO signup(UserRequest.UserSignUpDTO request) {
+    public UserResponse.UserSignupResponseDTO signup(UserRequest.UserSignUpDTO request) {
     	if (userRepository.findByEmail(request.getEmail()).isPresent())
     		throw new UserHandler(ErrorStatus.USER_ALREADY_EXIST);
     	
@@ -49,13 +55,11 @@ public class UserService {
     	User newUser = UserConverter.toUser(request, encodedPassword);
         User savedUser = userRepository.save(newUser);
     	
-    	String accessToken = jwtUtil.createAccessToken(savedUser);
-    	
-    	return UserConverter.toLoginResponse(savedUser, accessToken);
+    	return UserConverter.toSignupResponse(savedUser);
     }
     
     @Transactional
-	public UserResponse.UserLoginResponseDTO login(UserRequest.UserLoginDTO request) {
+	public UserResponse.UserLoginWrapperDTO login(UserRequest.UserLoginDTO request) {
 		User user = userRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
 		
@@ -63,9 +67,12 @@ public class UserService {
             throw new UserHandler(ErrorStatus.INVALID_PASSWORD);
         }
 		
-		String accessToken = jwtUtil.createAccessToken(user);
+		String refreshToken = jwtUtil.createToken("refresh", user, refreshTokenExpire);
+		String accessToken = jwtUtil.createToken("access", user, accessTokenExpire);
 		
-		return UserConverter.toLoginResponse(user, accessToken);
+		redisUtil.setDataExpire("refreshToken: " + user.getEmail(), refreshToken, refreshTokenExpire);
+		
+		return UserConverter.toLoginWrapper(UserConverter.toLoginResponse(user, accessToken), refreshToken);
 	}
     
     @Transactional
@@ -122,5 +129,33 @@ public class UserService {
         */
 
         return UserConverter.toTrackerResponse(queryResult);
+    }
+    
+    @Transactional
+    public UserResponse.UserLoginResponseDTO reissue(String refreshToken) {
+    	
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new UserHandler(ErrorStatus.NOT_VALID_TOKEN);
+        }
+
+        String email = jwtUtil.getUserEmail(refreshToken);
+
+        String savedToken = redisUtil.getData("refreshToken: " + email);
+        if (savedToken == null || !savedToken.equals(refreshToken)) {
+            throw new UserHandler(ErrorStatus.WRONG_TYPE_TOKEN);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+        
+        String newAccessToken = jwtUtil.createToken("access", user, accessTokenExpire);
+        
+		return UserConverter.toLoginResponse(user, newAccessToken);
+    }
+
+    @Transactional
+    public void logout(User user) {
+        String email = user.getEmail();
+        redisUtil.deleteData("refreshToken: " + email);
     }
 }

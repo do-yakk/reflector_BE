@@ -17,10 +17,10 @@ public class UserRequest {
 	public static class UserLoginDTO {
 		
 		@NotBlank(message = "이메일을 입력해주세요.")
-		String email;
+		private String email;
 		
 		@NotBlank(message = "비밀번호를 입력해주세요.")
-		String password;
+		private String password;
 		
 	}
 	
@@ -31,10 +31,10 @@ public class UserRequest {
 	public static class UserSignUpDTO {
 		
 		@NotBlank(message = "이메일은 필수 입력 값입니다.")
-		String email;
+		private String email;
 		
 		@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
-		String password;
+		private String password;
 	}
 	
 	@Builder
@@ -44,10 +44,10 @@ public class UserRequest {
 	public static class UserUpdateDTO {
 		
 		@NotBlank(message = "이메일을 입력해주세요. 변경하지 않을 것이라면 기존의 이메일을 입력해주세요.")
-		String email;
+		private String email;
 		
 		@NotBlank(message = "비밀번호를 입력해주세요. 변경하지 않을 것이라면 기존의 비밀번호를 입력해주세요.")
-		String password;
+		private String password;
 	}
   
 	@Builder
@@ -56,7 +56,7 @@ public class UserRequest {
 	@Getter
 	public static class UserEmailDTO {
 		@NotBlank(message = "이메일은 필수 입력 값입니다.")
-		String email;
+		private String email;
 	}
 	
 	@Builder
@@ -66,10 +66,23 @@ public class UserRequest {
 	public static class EmailCodeDTO {
 		
 		@NotBlank(message = "이메일은 필수 입력 값입니다.")
-		String email;
+		private String email;
 		
 		@Pattern(regexp = "^[0-9]{6}$", message = "인증 코드는 숫자 6자리여야 합니다.")
-		String code;
+		private String code;
+	}
+	
+	@Builder
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @AllArgsConstructor
+    @Getter
+	public static class TokenRequestDTO {
+		
+		@NotBlank
+		private String accessToken;
+		
+		@NotBlank
+		private String refreshToken;
 	}
 	
 }
