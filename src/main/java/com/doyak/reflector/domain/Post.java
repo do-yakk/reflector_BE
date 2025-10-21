@@ -53,17 +53,31 @@ public class Post extends BaseEntity{
 	
 	@Lob
 	private String content;
+	@Lob
+	private String input;
+	@Lob
+	private String output;
+	
+	private String limitTime;
+	private String limitMem;
+	
 	
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("orderIndex ASC")
 	private List<Block> blocks = new ArrayList<>();
 
 	// 업데이트 
-	public void update(Site site, Level level, String title, String content) {
+	public void update(Site site, Level level, String title, String content, 
+			String input, String output, String limitTime, String limitMem) {
         if (site != null) this.site = site;
         if (level != null) this.level = level;
         if (title != null) this.title = title;
         if (content != null) this.content = content;
+        if (input != null) this.input = input;
+        if (output != null) this.output = output;
+        
+        this.limitTime = limitTime;
+        this.limitMem = limitMem;
     }
 	
 }

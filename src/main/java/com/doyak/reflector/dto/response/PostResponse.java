@@ -22,6 +22,10 @@ public class PostResponse {
 		private String level;
 		private String title;
 		private String content;	
+		private String input;
+		private String output;
+		private String limitTime;
+		private String limitMem;
 		private String author;
 		private String createdAt;
 	    private String updatedAt;

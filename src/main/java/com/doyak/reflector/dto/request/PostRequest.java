@@ -29,5 +29,10 @@ public class PostRequest {
 		private String title;
 		@NotBlank
 		private String content;
+		
+		private String input;
+		private String output;
+		private String limitTime;
+		private String limitMem;
 	}
 }

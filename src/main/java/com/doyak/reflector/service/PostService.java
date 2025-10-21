@@ -1,6 +1,5 @@
 package com.doyak.reflector.service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -48,7 +47,8 @@ public class PostService {
     @Transactional
     public PostResponse.PostInfo updatePost(User user, Long postId, PostRequest.PostCommand command) {
         Post post = findPostById(user, postId);
-        post.update(command.getSite(), command.getLevel(), command.getTitle(), command.getContent());
+        post.update(command.getSite(), command.getLevel(), command.getTitle(), command.getContent(), 
+        		command.getInput(), command.getOutput(), command.getLimitTime(), command.getLimitMem());
         return postConverter.toResponse(post);
     }
 
