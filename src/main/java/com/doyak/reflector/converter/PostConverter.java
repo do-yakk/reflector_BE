@@ -29,6 +29,10 @@ public class PostConverter {
         		.level(command.getLevel())
         		.title(command.getTitle())
         		.content(command.getContent())
+        		.input(command.getInput())
+        		.output(command.getOutput())
+        		.limitTime(command.getLimitTime())
+        		.limitMem(command.getLimitMem())
         		.user(user)
         		.build();
     }
@@ -44,6 +48,10 @@ public class PostConverter {
         			.level(post.getLevel().getDisplayName())
         			.title(post.getTitle())
         			.content(post.getContent())
+        			.input(post.getInput())
+        			.output(post.getOutput())
+        			.limitTime(post.getLimitTime())
+        			.limitMem(post.getLimitMem())
         			.author(post.getUser().getEmail())
         			.createdAt(post.getCreatedAt().format(FORMATTER))
         			.updatedAt(post.getUpdatedAt().format(FORMATTER))
