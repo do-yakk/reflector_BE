@@ -20,6 +20,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByUser(User user, PageRequest pageRequest); 
     
+    @Query(value = "SELECT DISTINCT p FROM Post p " +
+            "JOIN p.blocks b " +
+            "JOIN CodeBlock cb ON cb.blockId = b.blockId " +
+            "LEFT JOIN cb.hashtags h " +
+            "WHERE p.user = :user AND h.hash IS NULL",
+    countQuery = "SELECT COUNT(DISTINCT p) FROM Post p " +
+                 "JOIN p.blocks b " +
+                 "JOIN CodeBlock cb ON cb.blockId = b.blockId " +
+                 "LEFT JOIN cb.hashtags h " +
+	                 "WHERE p.user = :user AND h.hash IS NULL")
+	Page<Post> findAllByUserWithNoHash(@Param("user") User user, Pageable pageable);
+	    
     @Query("SELECT p FROM Post p LEFT JOIN FETCH p.blocks WHERE p.postId = :postId")
     Optional<Post> findByIdWithBlocks(@Param("postId") Long postId);
     

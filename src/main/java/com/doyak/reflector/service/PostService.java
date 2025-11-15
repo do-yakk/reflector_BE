@@ -75,7 +75,7 @@ public class PostService {
     	PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort.getField()));
     	Page<Post> posts;
     	if (hash == null) {
-    		posts = postRepository.findAllByUser(user, pageRequest);
+    		posts = postRepository.findAllByUserWithNoHash(user, pageRequest);
     	} else {
     		posts = postRepository.findByUserAndHashtag(user, hash, pageRequest);
     	}
