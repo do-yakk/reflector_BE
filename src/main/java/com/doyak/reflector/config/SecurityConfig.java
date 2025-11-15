@@ -19,6 +19,7 @@ import com.doyak.reflector.auth.filter.JwtAuthenticationFilter;
 import com.doyak.reflector.auth.filter.JwtExceptionHandlerFilter;
 import com.doyak.reflector.auth.handler.JwtAccessDeniedHandler;
 import com.doyak.reflector.auth.handler.JwtAuthenticationEntryPoint;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,9 +33,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    
-    @Value("${spring.cors.allowed-origins}")
-    private String allowedOrigins;
     
     private static final String[] AUTH_WHITELIST = {
             "/v3/api-docs/**",
@@ -58,6 +56,7 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.csrf(auth -> auth.disable())
+			.cors(withDefaults())
 			.formLogin(auth -> auth.disable())
 			.httpBasic((auth) -> auth.disable())
 			.sessionManagement((session) -> session
@@ -68,7 +67,7 @@ public class SecurityConfig {
                     .accessDeniedHandler(jwtAccessDeniedHandler))
             
 			.authorizeHttpRequests(auth -> auth
-					.requestMatchers("/api/users/*").permitAll()
+					.requestMatchers("/api/users/**").permitAll()
 					.requestMatchers("/api/users/verification/**").permitAll()
                     .requestMatchers(AUTH_WHITELIST).permitAll()
 					.anyRequest().authenticated())
@@ -86,7 +85,7 @@ public class SecurityConfig {
 	@Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", allowedOrigins)); 
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); 
         configuration.setAllowCredentials(true); 

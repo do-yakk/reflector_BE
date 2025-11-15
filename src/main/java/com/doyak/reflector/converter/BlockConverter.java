@@ -11,6 +11,7 @@ import com.doyak.reflector.domain.Hashtag;
 import com.doyak.reflector.domain.Post;
 import com.doyak.reflector.domain.TextBlock;
 import com.doyak.reflector.domain.User;
+import com.doyak.reflector.domain.enums.BlockType;
 import com.doyak.reflector.dto.request.BlockRequest;
 import com.doyak.reflector.dto.request.BlockRequest.BlockCommand;
 import com.doyak.reflector.dto.response.BlockResponse;
@@ -33,6 +34,7 @@ public class BlockConverter {
 
     private TextBlock toTextEntity(BlockRequest.TextCommand request, Double orderIndex, Post post, User user) {
         return TextBlock.builder()
+        		.type(BlockType.TEXT)
         		.orderIndex(orderIndex)
         		.post(post)
         		.user(user)
@@ -42,6 +44,7 @@ public class BlockConverter {
 
     private CodeBlock toCodeEntity(BlockRequest.CodeCommand request, Double orderIndex, Post post, User user) {
         return CodeBlock.builder()
+        		.type(BlockType.CODE)
         		.orderIndex(orderIndex)
         		.post(post)
         		.user(user)
@@ -66,6 +69,8 @@ public class BlockConverter {
 
     private BlockResponse.Text toTextResponse(TextBlock block) {
         return BlockResponse.Text.builder()
+        		.blockId(block.getBlockId())
+        		.type(BlockType.TEXT)
                 .content(block.getContent())
                 .build();
     }
@@ -73,6 +78,8 @@ public class BlockConverter {
     private BlockResponse.Code toCodeResponse(CodeBlock block) {
     	List<String> hashtags = block.getHashtags().stream().map(Hashtag::getHash).toList();
         return BlockResponse.Code.builder()
+        		.blockId(block.getBlockId())
+        		.type(BlockType.CODE)
                 .content(block.getContent())
                 .language(block.getLanguage())
                 .performTime(block.getPerformTime())

@@ -2,6 +2,7 @@ package com.doyak.reflector.dto.response;
 
 import java.util.List;
 
+import com.doyak.reflector.domain.enums.BlockType;
 import com.doyak.reflector.domain.enums.Language;
 
 import lombok.AccessLevel;
@@ -17,7 +18,9 @@ public interface BlockResponse {
     @AllArgsConstructor
     @Getter
 	public class Text implements BlockResponse {
-        private String content;
+        private Long blockId;
+        private BlockType type;
+		private String content;
     }
 	
 	@Builder
@@ -25,7 +28,9 @@ public interface BlockResponse {
     @AllArgsConstructor
     @Getter
     public class Code implements BlockResponse {
-        private String content;
+        private Long blockId;
+        private BlockType type;
+		private String content;
         private Language language;
         private double performTime;
         private double performMem;
